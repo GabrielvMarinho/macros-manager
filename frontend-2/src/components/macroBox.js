@@ -8,14 +8,10 @@ import { Form, useResolvedPath } from "react-router-dom";
 import Table_ from "./Table_";
 import { Button } from "antd";
 import fetchWrapper from "@/utils/fetchWrapper";
-import getApi from "@/utils/api";
 import { getPromise, resolvePromise, setPromise } from "@/utils/toastPromiseManager";
+import cancelMacroAndUpdate from "@/utils/cancelMacroDashboard";
 
-export function MacroBox({ process, lastMessage, section, file, startMacro, stopMacro, api }) {
-  const [executando, setExecutando] = useState(false);
-  const [progresso, setProgresso] = useState(null);
-  const socketRef = useRef(null);
-  const {json, language, updateLanguage} = useJson()
+export function MacroBox({ json, lastMessage, section, queued, executing, setExecuting, file, startMacro, stopMacro, progresso, queryValueAgain, api }) {
   const [modal, setModal] = useState(false)
 
   const [columnsObj, setColumnsObj] = useState()
@@ -24,28 +20,10 @@ export function MacroBox({ process, lastMessage, section, file, startMacro, stop
   const [inputForm, setInputForms] = useState({})
   
   const [loading, setLoading] = useState(false)
-
-  useEffect(() =>{
-    if(process==true){
-        
-        const socket = new WebSocket(`ws://localhost:8765/receiver/${section}/${file}`);
-        socketRef.current = socket;
-
-        socket.onopen = () => {
-          setExecutando(true)
-          setProgresso(lastMessage)
-        };
-
-        socket.onmessage = (event) => {
-          onMessageMacro(event, setLoading, setExecutando, setProgresso, socket, json, file )
-        };
-    }
-    
-
-  }, [lastMessage])
   
-
-
+  useEffect(() =>{
+    setLoading(false)
+  }, [progresso])
   
   const tryStartMacro = () =>{
     setLoading(true)
@@ -112,59 +90,24 @@ export function MacroBox({ process, lastMessage, section, file, startMacro, stop
         ])
       );
     startMacro(section, file, fileContent, lista); 
+    resolvePromise(section, file)
 
-    const socket = new WebSocket(`ws://localhost:8765/receiver/${section}/${file}`);
-    socketRef.current = socket;
-
-
-
-   
-
-    socket.onopen = () => {
-      console.log("WebSocket conectado para macro:", file);
-
-    };
+    queryValueAgain()
     
-    socket.onmessage = (event) => {
-      onMessageMacro(event, setLoading, setExecutando, setProgresso, socket, json, file, () => resolvePromise(section, file))
-    };
+  }
 
-    socket.onclose = () => {
-      console.log("WebSocket fechado para macro:", file);
-    };
-  };
-
-
-
-  const __startMacro = (fileContent, resolvePromise) => {
-    startMacro(section, file, fileContent); 
-
-    const socket = new WebSocket(`ws://localhost:8765/receiver/${section}/${file}`);
-    socketRef.current = socket;
-
-
+  const __startMacro = async (fileContent, resolvePromise) => {
+    const res = await startMacro(section, file, fileContent);
+    resolvePromise()
+    queryValueAgain()
 
     
-    
-    socket.onopen = () => {
-      console.log("WebSocket conectado para macro:", file);
-    };
-    
-
-    socket.onmessage = (event) => {
-      onMessageMacro(event, setLoading, setExecutando, setProgresso, socket, json, file, resolvePromise)
-    };
-
-    socket.onclose = () => {
-      console.log("WebSocket fechado para macro:", file);
-    };
-  };
-
- 
-  if(loading){
+  }
+  
+  if(loading && !queued){
     return(
       <>
-      <Button className={`macroBox ${executando ? "macroAcionada" : ""}`} id={file} >
+      <Button className={`macroBox ${executing ? "macroAcionada" : ""}`} id={file} >
           <div className="spinner"></div>
       </Button>
       {modal && (
@@ -192,40 +135,49 @@ export function MacroBox({ process, lastMessage, section, file, startMacro, stop
 
     )
   }
+  
+  
   return (
-    <Button className={`macroBox ${executando ? "macroAcionada" : ""}`} id={file}>
+    <Button className={`macroBox ${executing || queued ? "macroAcionada" : ""}`} id={file}>
 
       <div style={{ display: "flex", gap: "20px", flexDirection: "column" }}>
         <label className="title">{file}</label>
-        {/* {!executando && (
-          <label id={"descr_" + file} className="desc">
-            {desc.descricao}
-          </label>
-        )} */}
+    
       </div>
+      {queued ? 
+        <label className="title">Macro na fila</label>
+          
 
-      {/* {!executando && (
-        <label id={"desc_" + file} className="desc">
-          {desc.solicitado}
-        </label>
-      )} */}
+        :
 
-      {executando && (
-        <div style={{ display: "flex", gap: "5px", flexDirection: "column", width: "100%" }}>
-          <label>{progresso !== null ? `${Math.round(progresso)}%` : "Executando..."}</label>
-          <div className="loading-container">
-            <div
-              className="loading-bar"
-              style={{
-                width: `${progresso || 0}%`,
-                backgroundColor: "black",
-              }}
-            ></div>
+        executing && (
+          <div style={{ display: "flex", alignItems:"center", justifyContent:"center", gap: "20px", flexDirection: "column", width: "100%" }}>
+            <label>{progresso !== null ? `${Math.round(progresso)}%` : "executing..."}</label>
+            <div className="loading-container">
+              <div
+                className="loading-bar"
+                style={{
+                  width: `${progresso || 0}%`,
+                  backgroundColor: "black",
+                }}
+              ></div>
+            </div>
+            <Button type="primary" danger size="medium"
+            id={"cancelButton_" + file}
+            className="cancelButtonMacro"
+            
+            onClick={() =>{cancelMacroAndUpdate(() =>stopMacro(section, file), file, json, queryValueAgain)}}
+          >
+            {json.cancel_macro}
+          </Button>
+
           </div>
-        </div>
-      )}
+        )
+    
+      }
 
-      {!executando && (
+      
+      {!executing && !queued && (
         <Button type="primary" success size="medium"
           id={"executeButton_" + file}
           className="buttonMacro"
@@ -236,16 +188,7 @@ export function MacroBox({ process, lastMessage, section, file, startMacro, stop
         </Button>
       )}
 
-      {executando && (
-        <Button type="primary" danger size="medium"
-          id={"cancelButton_" + file}
-          className="cancelButtonMacro"
-          
-          onClick={() =>{cancelarMacro(stopMacro, section, file, setExecutando, setProgresso, socketRef, json)}}
-        >
-          {json.cancel_macro}
-        </Button>
-      )}
+      
       
     </Button>
 

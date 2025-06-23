@@ -47,16 +47,15 @@ def run_macro_module(sap_window, fileContent, section, file, params=None):
         sys.argv.append(json.dumps(obj))
 
 
-        data = io.StringIO()
-        sys.stdout = data
+        # data = io.StringIO()
+        # sys.stdout = data
 
         exec(fileContent)
         
-        sys.stdout = sys.__stdout__
+        # sys.stdout = sys.__stdout__
 
-        logs = data.getvalue()
+        # logs = data.getvalue()
 
-        print(logs)
         
 
 
@@ -156,20 +155,19 @@ class Api:
         return json.dumps(self.processes_last_message)
  
     def start_macro(self, section, file, fileContent, params=None):
-        print(params)
         if(not self.has_free_window()):
             self.add_processes_queue(fileContent, section, file, params)
             response = {
-            "message":"Macro Queued",
+            "message":"macro_queued",
             }
-            return response
-        
+            return json.dumps(response)
+
         child = self._start_transaction(section, file, fileContent, params)
         
         self.processes[f"{section}{file}"] = {"child":child,"file":file,"section":section}
 
         response = {
-            "message":"Thread Started",
+            "message":"macro_started",
         }
 
         return json.dumps(response)

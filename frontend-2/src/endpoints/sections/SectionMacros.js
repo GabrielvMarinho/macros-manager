@@ -10,37 +10,96 @@ import Table_ from '@/components/Table_';
 import Credits from '@/components/Credits';
 import LoadingMacros from '@/components/loading/LoadingMacros';
 import Arrow from "@/icons/arrow.png"
+import { wsManager } from '@/utils/WebSocketManager';
+import onMessageMacroDashboard from '@/utils/onMessageMacroDashboard';
+import { resolvePromise } from '@/utils/toastPromiseManager';
 export default function SectionMacros() {
 
   const { section } = useParams();
   
   const [api, setAapi] = useState(null)
   const [macros, setMacros] = useState()
-  const [macrosDesc, setmacrosDesc] = useState([])
-  const [inputs, setInputs] = useState({})
-  const [listProcess, setListProcesses] = useState({})
-  const [processesLastMessage, setProcessesLastMessage] = useState({})
   const {json, language, updateLanguage} = useJson()
 
 
-  useEffect(() => {
-    async function AwaitApi(){
-      setAapi(await getApi())
-    }
-    AwaitApi()
+  const [queryValue, queryValueAgain] = useState(true)
 
-    if (api) {
-      fetchWrapper(api.get_folders(encodeURIComponent(section))).then(data =>{
-        setMacros(data?.folders)
-        // setmacrosDesc(data.dados_macros)
-        // setInputs(data.inputs)
+  const [executingMap, setExecutingMap] = useState({})
+  const [progressoMap, setProgressoMap] = useState({})
 
-      })
-      
-      fetchWrapper(api.get_list_processes()).then(setListProcesses)
-      fetchWrapper(api.get_processes_last_message()).then(setProcessesLastMessage)
-    }
-  }, [api]);
+  const [queueMacros, setQueuedMacros] = useState({})
+
+  const [processesLastMessage, setProcessesLastMessage] = useState({})
+
+
+  useEffect(() =>{        
+        console.log("queyr")
+        if (
+          api?.get_queue &&
+          api?.get_list_processes &&
+          api?.get_processes_last_message
+        ) {
+          fetchWrapper(api.get_queue()).then((data) => {
+            setQueuedMacros({})
+            data.queue.forEach((macro) => {
+              setQueuedMacros(prev =>({
+                  ...prev,
+                  [macro.section+macro.file]: {"section":macro.section, "file":macro.file}
+                }))
+            });
+          });
+          fetchWrapper(api.get_list_processes()).then((data) =>{
+                
+            setExecutingMap({})
+            Object.entries(data).forEach(([key, value]) => {
+
+                setExecutingMap(prev =>({
+                  ...prev,
+                  [key]: true
+                }))
+
+
+                const socket = wsManager.createWsConnection(value.section, value.file)
+                wsManager.addListener(value.section, value.file, 
+                  (event) =>{onMessageMacroDashboard(
+                    event,
+                    key,
+                    setExecutingMap,
+                    setProgressoMap,
+                    () =>queryValueAgain(!queryValue),
+                    socket,
+                    json,
+                    value.file, 
+                    () =>resolvePromise(value.section, value.file)
+                  )})
+
+            });
+          });
+          fetchWrapper(api.get_processes_last_message()).then(setProcessesLastMessage);
+        }
+    }, [api, queryValue])
+
+
+
+
+    useEffect(() => {
+      async function AwaitApi(){
+        setAapi(await getApi())
+      }
+      AwaitApi()
+
+      if (api) {
+        fetchWrapper(api.get_folders(encodeURIComponent(section))).then(data =>{
+
+
+          setMacros(data?.folders)
+
+          
+        })
+        
+
+      }
+    }, [api]);
 
 
 
@@ -73,14 +132,22 @@ export default function SectionMacros() {
             <h1>no macros found</h1>
             :
             macros && macros.map((i) =>{
+              const progresso = progressoMap[section+i]
+          
+              const queue = Object.values(queueMacros).some(
+                (value) => value.section + value.file === section + i
+              );
               
               return <MacroBox 
-              // actualFileName = {macrosDesc[i].name} 
-              process={listProcess[section+i]?true:false} 
+              json={json}
+              executing={executingMap[section+i]?true:false} 
+              setExecutingMap={setExecutingMap}
               lastMessage={processesLastMessage[i]} 
               file={i} 
-              section={section} 
-              // desc={macrosDesc[i]} 
+              section={section}
+              queued={queue}
+              progresso={progresso}
+              queryValueAgain={() =>queryValueAgain(!queryValue)}
               startMacro={api.start_macro} 
               stopMacro={api.stop_macro}
               api={api}></MacroBox>

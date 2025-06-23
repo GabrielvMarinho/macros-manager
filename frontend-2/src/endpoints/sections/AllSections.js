@@ -25,7 +25,7 @@ export default function AllSections() {
 
   const [queryValue, queryValueAgain] = useState(true)
 
-  const [executandoMap, setExecutandoMap] = useState({})
+  const [executingMap, setexecutingMap] = useState({})
   const [progressoMap, setProgressoMap] = useState({})
 
   const [queueMacros, setQueuedMacros] = useState({})
@@ -40,7 +40,7 @@ export default function AllSections() {
         api?.get_processes_last_message
       ) {
         fetchWrapper(api.get_queue()).then((data) => {
-          console.log("data finale", data)
+
           setQueuedMacros({})
 
           data.queue.forEach((macro) => {
@@ -58,7 +58,7 @@ export default function AllSections() {
           setListProcesses(data)
           Object.entries(data).forEach(([key, value]) => {
 
-              setExecutandoMap(prev =>({
+              setexecutingMap(prev =>({
                 ...prev,
                 [key]: true
               }))
@@ -69,7 +69,7 @@ export default function AllSections() {
                 (event) =>{onMessageMacroDashboard(
                   event,
                   key,
-                  setExecutandoMap,
+                  setexecutingMap,
                   setProgressoMap,
                   () =>queryValueAgain(!queryValue),
                   socket,
@@ -134,7 +134,7 @@ export default function AllSections() {
             }
             <div className="lineBreaker"></div>
             
-            <Dashboard queryValueAgain={() =>queryValueAgain(!queryValue)} progressoMap={progressoMap} json={json} api={api} executandoMap={executandoMap} listProcess={listProcess} processesLastMessage={processesLastMessage}/>
+            <Dashboard queryValueAgain={() =>queryValueAgain(!queryValue)} progressoMap={progressoMap} json={json} api={api} executingMap={executingMap} listProcess={listProcess} processesLastMessage={processesLastMessage}/>
         </div>
         
         <SideBar json={json} api={api}/>

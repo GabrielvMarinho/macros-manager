@@ -49,7 +49,6 @@ body{
 }
 .loading-container {
     transition: 0.4s;
-
     width: 80%;
     margin-inline: auto;
     height: 20px;
