@@ -1,0 +1,24 @@
+{
+    "section_list": "Liste des sections",
+    "return": "Retour",
+    "loading_macro_toast": "Chargement du processus...",
+    "started_macro_toast": "Macro démarrée avec succès !",
+    "finished_macro_toast":"Macro exécutée avec succè: ",
+    "canceled_macro_toast": "Macro annulée !",
+    "error_macro_toast": "Erreur lors de l'exécution de la macro : ",
+    "cancel_macro": "Annuler",
+    "execute_macro": "Exécuter",
+    "clean":"Nettoyers",
+    "credits_disclaimer": "En cas de questions, veuillez contacter Gabriel Volles Marinho et Robert Aron Zimmermann.",
+    "hint1_table": "Tabulation: Cellule suivante",
+    "hint2_table": "Retour arrière: Supprimer la cellule",
+    "hint3_table": "Entrée: Nouvelle cellule",
+    "start_sap":"Démarrer SAP",
+    "configuration_saved": "Paramètres enregistrés !",
+    "save_changes": "Enregistrer les modifications",
+    "actions": "Actions",
+    "configuration": "Paramètres",
+    "languages": "Langues",
+    "dashboard":"Tableau"
+
+}

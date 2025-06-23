@@ -1,0 +1,24 @@
+{
+    "section_list": "Abschnittsliste",
+    "return": "Zurück",
+    "loading_macro_toast": "Prozess wird geladen...",
+    "started_macro_toast": "Makro erfolgreich gestartet!",
+    "finished_macro_toast":"Makro erfolgreich ausgeführt: ",
+    "canceled_macro_toast": "Makro abgebrochen!",
+    "error_macro_toast": "Fehler beim Ausführen des Makros: ",
+    "cancel_macro": "Abbrechen",
+    "execute_macro": "Ausführen",
+    "clean":"Sauber",
+    "credits_disclaimer": "Bei Fragen wenden Sie sich bitte an Gabriel Volles Marinho und Robert Aron Zimmermann.",
+    
+    "hint1_table": "Tab: Nächste Zelle",
+    "hint2_table": "Rücktaste: Zelle löschen",
+    "hint3_table": "Eingabetaste: Neue Zelle",
+    "start_sap":"SAP starten",
+    "configuration_saved": "Einstellungen gespeichert!",
+    "save_changes": "Änderungen speichern",
+    "actions": "Aktionen",
+    "configuration": "Einstellungen",
+    "languages": "Sprachen",
+    "dashboard":"Dashboard"
+}

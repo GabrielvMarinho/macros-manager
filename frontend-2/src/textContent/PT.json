@@ -1,0 +1,26 @@
+{
+    "section_list": "Lista de seções",
+    "return": "Voltar",
+    "loading_macro_toast": "Carregando processo...",
+    "started_macro_toast": "Macro iniciada com sucesso!",
+    "finished_macro_toast":"Macro executada com sucesso: ",
+
+    "canceled_macro_toast": "Macro cancelada!",
+    "error_macro_toast": "Erro ao executar a macro: ",
+    "cancel_macro": "Cancelar",
+    "execute_macro": "Executar",
+    "clean":"Limpar",
+    "credits_disclaimer":"Dúvidas entrar em contato com Gabriel Volles Marinho e Robert Aron Zimmermann.",
+    "hint1_table":"Tab: Próxima célula",
+    "hint2_table":"Backspace: Deletar célula",
+    "hint3_table":"Enter: Nova célular",
+    "start_sap":"Iniciar SAP",
+    "configuration_saved": "Configurações salvas!",
+    "save_changes": "Salvar alterações",
+    "actions": "Ações",
+    "configuration": "Configurações",
+    "languages": "Idiomas",
+    "dashboard":"Painel de controle"
+
+    
+}

@@ -1,0 +1,5 @@
+frontend
+npm run build
+
+backend wrapping frontend too
+pyinstaller --add-data "frontend-2/build:frontend-2/build" --add-data "modelo_default:modelo_default" main.py --noconsole

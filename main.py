@@ -1,0 +1,463 @@
+import win32com.client
+import threading
+import websockets
+import asyncio
+import office_api.office365_api as office365_api
+from datetime import datetime
+from modelo_default.functions import updateWindowsJson, getFreeWindow, freeWindow
+from database.database import *
+import json
+import webview
+
+import pandas as pd
+import tempfile
+
+from collections import deque
+from collections import Counter
+import os
+import json
+from time import sleep
+
+import multiprocessing
+import importlib
+import urllib.parse
+
+from pathlib import Path
+from selenium import webdriver
+
+
+#external imports
+import sys
+from tkinter import messagebox
+import re
+import os
+import time
+import subprocess
+import pyautogui
+import io
+
+MACRO_EXECUTED = "macro_executed"
+MACRO_ERROR = "macro_error"
+
+
+def run_macro_module(fileContent, section, file, params=None):
+        obj = {"section_parent_folder": section, "parent_folder": file}
+        if params:
+            obj["params"] = params
+        
+        sys.argv.append(json.dumps(obj))
+
+
+        data = io.StringIO()
+        sys.stdout = data
+
+        exec(fileContent)
+        
+        sys.stdout = sys.__stdout__
+
+        logs = data.getvalue()
+        print(logs)        
+        
+
+
+
+
+class Api:
+    #for terminating processes
+    processes = {}
+
+    #for last message querying
+    processes_last_message = {}
+
+    #for when more than 6 macros are activated at a time
+    processes_queue = deque()
+
+    #for pairs of who sends and who receives
+    pairings = {}
+
+    def get_queue(self):
+        return json.dumps({"queue":list(self.processes_queue)})
+    
+    def add_processes_queue(self, fileContent, section, file, params=None):
+        self.processes_queue.append({"section":section, "file":file,"fileContent":fileContent, "params":params})
+        pass
+
+    def run_next_macro_queue(self):
+        macro = self.processes_queue.popleft()
+
+        self.start_macro(macro["section"], macro["file"], macro["fileContent"], macro["params"])
+
+        
+    def are_there_macros_in_queue(self):
+        if(self.processes_queue):
+            return True
+        return False
+
+    def kill_all_processes(self):
+        self.clean_windows()
+
+        for chave, valor in self.processes.items():
+
+            valor.terminate()
+            
+        self.processes = {}
+
+        response= {
+            "message":"macros killed"
+        }
+        
+
+        
+        return response
+         
+    
+    def _start_transaction(self, section, file, fileContent, params=None):
+        p = multiprocessing.Process(target=run_macro_module, args=(fileContent, section, file, params,))
+        p.start()
+        return p
+    
+    def get_sections(self):
+        sections_path = os.path.join(os.getcwd(), "modelo_default", "macros")
+        sections = os.listdir(sections_path)
+
+        response = {
+            "sections":sections,
+        }
+        return json.dumps(response)
+    
+    # def get_all_macros(self):
+    #     section_path = os.path.join(os.getcwd(), "modelo_default", "macros")
+
+    #     sections = os.listdir(section_path)
+    #     finaList = []
+    #     dadosMacros = {}
+        
+    #     for section in sections:
+    #         macro_path = os.path.join(section_path, section)
+    #         macros = os.listdir(macro_path)
+
+    #         for i in macros:
+    #             finaList.append(section+i)
+
+                
+    #             with open(os.path.join(os.path.join(macro_path, i, "data.json")), "r", encoding="utf-8") as file:
+    #                 data = json.load(file)
+    #             data["file"] = i
+    #             data["section"] = section
+
+    #             dadosMacros[(section+i)] = data
+
+
+    #     response = {
+    #         "macros":finaList,
+    #         "dados_macros":dadosMacros
+    #     }
+    #     return json.dumps(response)
+    
+    # def get_macros(self, section):
+    #     print(os.path.join("modelo_default", "macros", section))
+    #     macros_path = os.path.join("modelo_default", "macros", section)
+
+    #     files = os.listdir(macros_path)
+    #     finaList = []
+    #     inputs = {}
+    #     dadosMacros = {}
+    #     for i in files:
+    #         finaList.append(i)
+
+            
+    #         with open(os.path.join(os.path.join(macros_path, i, "data.json")), "r", encoding="utf-8") as file:
+    #             data = json.load(file)
+    #         dadosMacros[i] = data
+    #         with open(os.path.join(os.path.join(macros_path, i, "inputs.json")), "r", encoding="utf-8") as file:
+    #             data = json.load(file)
+    #         inputs[i] = data
+
+    #     response = {
+    #         "macros":finaList,
+    #         "dados_macros":dadosMacros,
+    #         "inputs":inputs
+    #     }
+
+    #     return json.dumps(response)
+
+
+    def open_macro_output(self, id):
+        data = get_macro_output(id)
+        data = json.loads(data)
+        data = pd.DataFrame(data)
+        with tempfile.TemporaryFile(delete=False, suffix=".xlsx") as f:
+            data.to_excel(f.name)
+            os.startfile(f.name)
+
+    def get_list_processes(self):
+        _json = {}
+        for chave, valor in self.processes.items():
+            _json[chave] = {"file":valor["file"], "section":valor["section"]} 
+        return json.dumps(_json)
+
+    def get_processes_last_message(self):
+        return json.dumps(self.processes_last_message)
+ 
+    def start_macro(self, section, file, fileContent, params=None):
+        
+        if(not freeWindow()):
+            self.add_processes_queue(fileContent, section, file, params)
+            response = {
+            "message":"Macro Queued",
+            }
+            return response
+        child = self._start_transaction(section, file, fileContent, params)
+        
+        self.processes[f"{section}{file}"] = {"child":child,"file":file,"section":section}
+
+        response = {
+            "message":"Thread Started",
+        }
+
+        return json.dumps(response)
+
+    def stop_macro(self, section, file):
+        self.processes[f"{section}{file}"]["child"].terminate()
+        del self.processes[section+file]
+        
+        updateWindowsJson(file)
+        #more than a single place checks for this
+        if self.are_there_macros_in_queue():
+            self.run_next_macro_queue()
+
+
+        response = {
+            "message":"Thread Stopped",
+        }
+        return json.dumps(response)
+
+    async def handle_connection(self, websocket):
+        path = websocket.request.path
+        params = path.strip("/").split("/")
+
+        role, section, file = params  
+        client_id = section+file
+        client_id = urllib.parse.unquote(client_id)
+
+        if(role == "receiver"):
+            self.pairings[client_id] = websocket 
+
+        try:
+            async for message in websocket:
+                if role == "sender":
+                    if client_id in self.pairings:
+                        print(message)
+                        content = json.loads(message)
+                        print(content["message"])
+
+                        msg = content["message"]
+                        
+                        self.processes_last_message[client_id] = msg
+                        await self.pairings[client_id].send(str(msg))
+
+                        if(msg==MACRO_EXECUTED or msg==MACRO_ERROR):
+                            #only process to use unquoted name in value, yes, that sucks
+                            updateWindowsJson(urllib.parse.unquote(file))
+                            del self.processes_last_message[client_id]
+                            del self.processes[client_id]
+                           
+                            if self.are_there_macros_in_queue():
+                                self.run_next_macro_queue()
+                            if(msg==MACRO_EXECUTED):
+                                try:
+                                    data = content.get("data")
+
+                                    if(data):
+                                        data = json.dumps(data)
+                             
+                                    add_macro_to_history(urllib.parse.unquote(file), data)
+                                except:
+                                    pass
+                                
+                                
+
+                            
+                            
+                    else:
+                        await websocket.send("Receiver not connected")
+        except:
+            pass
+
+    async def ws_server(self):
+        await websockets.serve(self.handle_connection, "localhost", 8765)
+        await asyncio.Future()            
+
+    def run_ws_server(self):
+        asyncio.run(self.ws_server())
+
+    def clean_windows(self):
+        path = f"{os.getcwd()}/windows.json"
+        data = {}
+        for i in range(6):
+            data[i] = "null"
+
+        with open(path, "w", encoding="utf-8") as file:
+            json.dump(data, file, indent=4)
+
+    def get_credentials(self):
+        path = os.path.join(os.getcwd(), "modelo_default", "sap_login.txt")
+
+        [login, password] = open(path).read().strip().split(",")
+        return json.dumps({login:password})
+    
+    def update_credentials(self, login, password):
+        path = os.path.join(os.getcwd(), "modelo_default", "sap_login.txt")
+
+        f = open(path, "w")
+        f.write(f"{login},{password}")
+        f.close()
+        pass
+
+    def open_sap_web(self, download_dir=None, timeout=100):
+        
+        
+        if download_dir is None:
+            download_dir = os.path.join(Path.home(), "Downloads")
+
+        
+
+        driver = webdriver.Edge()
+        driver.get("https://www.myweg.net/irj/portal?NavigationTarget=pcd:portal_content/net.weg.folder.weg/net.weg.folder"
+           ".core/net.weg.folder.roles/net.weg.role.ecc/net.weg.iview.ecc")
+
+        sap_file = None
+        start_time = time.time()
+
+        while time.time() - start_time < timeout:
+            # Encontra o arquivo .sap mais recente
+            sap_files = [
+                os.path.join(download_dir, f) for f in os.listdir(download_dir) if f.endswith(".sap")
+            ]
+            
+            if sap_files:
+                sap_file = max(sap_files, key=os.path.getctime)  # Mais recente por data de criação
+                break
+            time.sleep(1)
+
+        if sap_file is None:
+            raise TimeoutError(f"Tempo limite atingido. Arquivo .sap não encontrado em {download_dir}")
+
+        # Aguarda downloads incompletos (ex: .crdownload, .part)
+        while any(
+            filename.endswith((".sap.crdownload", ".sap.part")) for filename in os.listdir(download_dir)
+        ):
+            time.sleep(1)
+
+        print(f"Arquivo .sap mais recente encontrado: {sap_file}")
+
+        try:
+            os.startfile(sap_file)  # Abre o arquivo usando o programa associado
+            driver.close()
+        except FileNotFoundError:
+            print(f"Erro: Arquivo não encontrado: {sap_file}")
+        except Exception as e:
+            print(f"Erro ao abrir o arquivo: {e}")
+
+    def open_sap(self):
+        path = os.path.join(os.getcwd(), "modelo_default", "sap_login.txt")
+
+        [login, password] = open(path).read().strip().split(",")
+
+        if(not login or not password):
+            self.open_sap_web()
+            return
+
+            
+        path = "C:/Program Files (x86)/SAP/FrontEnd/SapGui/saplgpad.exe"
+            
+        subprocess.Popen(path)
+
+        while not pyautogui.getActiveWindowTitle().startswith("SAP Logon"):
+            time.sleep(1)
+
+        sapguiauto = win32com.client.GetObject('SAPGUI')
+        application = sapguiauto.GetScriptingEngine
+        connection = application.OpenConnection("EP0 - ECC Produção", True)
+        session = connection.Children(0)
+        session.findById("wnd[0]").maximize()
+        session.findById("wnd[0]/usr/txtRSYST-BNAME").Text = login
+        session.findById("wnd[0]/usr/pwdRSYST-BCODE").Text = password
+        session.findById("wnd[0]").sendVKey(0)
+    
+    def get_folders(self, path=None):
+        cntx = office365_api.get_sharepoint_ctx("BR-WEN-IND-PLANPRODUCAO")
+
+        folder_path = "Shared%20Documents/Departamento%20PCP/Gerenciador%20de%20Scripts/Macros"
+        if(path != None):
+            folder_path = f"Shared%20Documents/Departamento%20PCP/Gerenciador%20de%20Scripts/Macros/{path}"
+        
+        root_folder = cntx.web.get_folder_by_server_relative_url(folder_path)
+
+        root_folder.expand(["Folders"]).get().execute_query()
+
+        folders = root_folder.folders
+
+        folder_list = []
+
+        for folder in folders:
+            folder_list.append(folder.name)
+        data = {
+            "folders":folder_list
+        }
+        return json.dumps(data)
+    
+    def get_files(self, path):
+        cntx = office365_api.get_sharepoint_ctx("BR-WEN-IND-PLANPRODUCAO")
+        
+        file_path = f"Shared%20Documents/Departamento%20PCP/Gerenciador%20de%20Scripts/Macros/{path}"
+
+        root_folder = cntx.web.get_folder_by_server_relative_url(file_path)
+
+        root_folder.expand(["Files"]).get().execute_query()
+
+        files = root_folder.files
+
+        data = {}
+        for file in files:
+            if(file.name[-5:]==".json"):
+                data[file.name] = json.loads(file.read().decode("utf-8"))
+            else:
+                data[file.name] = file.read().decode("utf-8")
+        return json.dumps(data)
+
+
+    def get_history(self):
+        res = get_macros_history()
+        print(res)
+        res = {"history":res}
+        return json.dumps(res)
+
+if __name__ == "__main__":
+    multiprocessing.freeze_support() 
+    multiprocessing.set_start_method("spawn")
+
+    api = Api()
+    api.clean_windows()
+    ws_thread = threading.Thread(target=api.run_ws_server, daemon=True)
+    ws_thread.start()
+    
+    # webview.create_window("Gerenciador De Scripts", "frontend-2/build/index.html", js_api=api, confirm_close=True)
+    webview.create_window("Gerenciador De Scripts", "localhost:3000", js_api=api, confirm_close=True, maximized=True, min_size=(1450, 850))
+
+    webview.start(debug=True)
+
+
+
+
+
+
+
+    # with open("main1.py") as f:
+    #     exec(f.read())
+
+    
+
+
+
+
