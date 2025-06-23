@@ -4,7 +4,6 @@ import websockets
 import asyncio
 import office_api.office365_api as office365_api
 from datetime import datetime
-from modelo_default.functions import updateWindowsJson, getFreeWindow, freeWindow
 from database.database import *
 import json
 import webview
@@ -40,8 +39,8 @@ MACRO_EXECUTED = "macro_executed"
 MACRO_ERROR = "macro_error"
 
 
-def run_macro_module(fileContent, section, file, params=None):
-        obj = {"section_parent_folder": section, "parent_folder": file}
+def run_macro_module(sap_window, fileContent, section, file, params=None):
+        obj = {"section_parent_folder": section, "parent_folder": file, "sap_window":sap_window}
         if params:
             obj["params"] = params
         
@@ -56,7 +55,8 @@ def run_macro_module(fileContent, section, file, params=None):
         sys.stdout = sys.__stdout__
 
         logs = data.getvalue()
-        print(logs)        
+
+        print(logs)
         
 
 
@@ -65,6 +65,16 @@ def run_macro_module(fileContent, section, file, params=None):
 class Api:
     #for terminating processes
     processes = {}
+
+    #handle windows left
+    windows = {
+        "0": "null",
+        "1": "null",
+        "2": "null",
+        "3": "null",
+        "4": "null",
+        "5": "null"
+    }
 
     #for last message querying
     processes_last_message = {}
@@ -84,7 +94,7 @@ class Api:
 
     def run_next_macro_queue(self):
         macro = self.processes_queue.popleft()
-
+        
         self.start_macro(macro["section"], macro["file"], macro["fileContent"], macro["params"])
 
         
@@ -112,7 +122,8 @@ class Api:
          
     
     def _start_transaction(self, section, file, fileContent, params=None):
-        p = multiprocessing.Process(target=run_macro_module, args=(fileContent, section, file, params,))
+        window = self.update_windows_dict(section+file, will_use=True)
+        p = multiprocessing.Process(target=run_macro_module, args=(window, fileContent, section, file, params,))
         p.start()
         return p
     
@@ -125,61 +136,6 @@ class Api:
         }
         return json.dumps(response)
     
-    # def get_all_macros(self):
-    #     section_path = os.path.join(os.getcwd(), "modelo_default", "macros")
-
-    #     sections = os.listdir(section_path)
-    #     finaList = []
-    #     dadosMacros = {}
-        
-    #     for section in sections:
-    #         macro_path = os.path.join(section_path, section)
-    #         macros = os.listdir(macro_path)
-
-    #         for i in macros:
-    #             finaList.append(section+i)
-
-                
-    #             with open(os.path.join(os.path.join(macro_path, i, "data.json")), "r", encoding="utf-8") as file:
-    #                 data = json.load(file)
-    #             data["file"] = i
-    #             data["section"] = section
-
-    #             dadosMacros[(section+i)] = data
-
-
-    #     response = {
-    #         "macros":finaList,
-    #         "dados_macros":dadosMacros
-    #     }
-    #     return json.dumps(response)
-    
-    # def get_macros(self, section):
-    #     print(os.path.join("modelo_default", "macros", section))
-    #     macros_path = os.path.join("modelo_default", "macros", section)
-
-    #     files = os.listdir(macros_path)
-    #     finaList = []
-    #     inputs = {}
-    #     dadosMacros = {}
-    #     for i in files:
-    #         finaList.append(i)
-
-            
-    #         with open(os.path.join(os.path.join(macros_path, i, "data.json")), "r", encoding="utf-8") as file:
-    #             data = json.load(file)
-    #         dadosMacros[i] = data
-    #         with open(os.path.join(os.path.join(macros_path, i, "inputs.json")), "r", encoding="utf-8") as file:
-    #             data = json.load(file)
-    #         inputs[i] = data
-
-    #     response = {
-    #         "macros":finaList,
-    #         "dados_macros":dadosMacros,
-    #         "inputs":inputs
-    #     }
-
-    #     return json.dumps(response)
 
 
     def open_macro_output(self, id):
@@ -200,13 +156,14 @@ class Api:
         return json.dumps(self.processes_last_message)
  
     def start_macro(self, section, file, fileContent, params=None):
-        
-        if(not freeWindow()):
+        print(params)
+        if(not self.has_free_window()):
             self.add_processes_queue(fileContent, section, file, params)
             response = {
             "message":"Macro Queued",
             }
             return response
+        
         child = self._start_transaction(section, file, fileContent, params)
         
         self.processes[f"{section}{file}"] = {"child":child,"file":file,"section":section}
@@ -221,7 +178,7 @@ class Api:
         self.processes[f"{section}{file}"]["child"].terminate()
         del self.processes[section+file]
         
-        updateWindowsJson(file)
+        self.update_windows_dict(file+section)
         #more than a single place checks for this
         if self.are_there_macros_in_queue():
             self.run_next_macro_queue()
@@ -247,9 +204,7 @@ class Api:
             async for message in websocket:
                 if role == "sender":
                     if client_id in self.pairings:
-                        print(message)
                         content = json.loads(message)
-                        print(content["message"])
 
                         msg = content["message"]
                         
@@ -257,8 +212,9 @@ class Api:
                         await self.pairings[client_id].send(str(msg))
 
                         if(msg==MACRO_EXECUTED or msg==MACRO_ERROR):
-                            #only process to use unquoted name in value, yes, that sucks
-                            updateWindowsJson(urllib.parse.unquote(file))
+
+                            self.update_windows_dict(client_id, will_use=False)
+
                             del self.processes_last_message[client_id]
                             del self.processes[client_id]
                            
@@ -292,13 +248,14 @@ class Api:
         asyncio.run(self.ws_server())
 
     def clean_windows(self):
-        path = f"{os.getcwd()}/windows.json"
-        data = {}
-        for i in range(6):
-            data[i] = "null"
-
-        with open(path, "w", encoding="utf-8") as file:
-            json.dump(data, file, indent=4)
+        self.windows = {
+            "0": "null",
+            "1": "null",
+            "2": "null",
+            "3": "null",
+            "4": "null",
+            "5": "null"
+        }
 
     def get_credentials(self):
         path = os.path.join(os.getcwd(), "modelo_default", "sap_login.txt")
@@ -407,6 +364,32 @@ class Api:
         }
         return json.dumps(data)
     
+    def has_free_window(self):
+        for i in range(6):
+            if self.windows.get(str(i)) == "null":
+                return True
+        return False
+    
+    def update_windows_dict(self, key, will_use=False):
+        if will_use:
+            return self.get_free_window(key)
+        else:
+            for k, v in self.windows.items():
+                if v == key:
+                    self.windows[k] = "null"
+                    break
+            return -1
+
+    def get_free_window(self, key):
+        for i in range(6):
+            i_str = str(i)
+            if self.windows.get(i_str) == "null":
+                self.windows[i_str] = key
+                return i
+        return -1
+
+
+
     def get_files(self, path):
         cntx = office365_api.get_sharepoint_ctx("BR-WEN-IND-PLANPRODUCAO")
         
@@ -429,7 +412,6 @@ class Api:
 
     def get_history(self):
         res = get_macros_history()
-        print(res)
         res = {"history":res}
         return json.dumps(res)
 
@@ -438,7 +420,6 @@ if __name__ == "__main__":
     multiprocessing.set_start_method("spawn")
 
     api = Api()
-    api.clean_windows()
     ws_thread = threading.Thread(target=api.run_ws_server, daemon=True)
     ws_thread.start()
     

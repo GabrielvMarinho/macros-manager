@@ -4,12 +4,12 @@ import { findByLabelText } from "@testing-library/dom";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useJson } from "./getLanguageJson";
-import { Form } from "react-router-dom";
+import { Form, useResolvedPath } from "react-router-dom";
 import Table_ from "./Table_";
 import { Button } from "antd";
 import fetchWrapper from "@/utils/fetchWrapper";
 import getApi from "@/utils/api";
-import { setPromise } from "@/utils/toastPromiseManager";
+import { getPromise, resolvePromise, setPromise } from "@/utils/toastPromiseManager";
 
 export function MacroBox({ process, lastMessage, section, file, startMacro, stopMacro, api }) {
   const [executando, setExecutando] = useState(false);
@@ -49,6 +49,20 @@ export function MacroBox({ process, lastMessage, section, file, startMacro, stop
   
   const tryStartMacro = () =>{
     setLoading(true)
+
+
+    let resolvePromise 
+    const promise = new Promise((resolve, reject) =>{
+      resolvePromise = resolve;
+    })
+
+    toast.promise(promise, {
+      loading: json.loading_macro_toast,
+      success: json.started_macro_toast,
+    })
+    setPromise(section, file, resolvePromise)
+    
+
     fetchWrapper(api.get_files(encodeURIComponent(section)+"/"+encodeURIComponent(file))).then( data =>{
         const columns = data["inputs.json"];
         const desc = data["data.json"];
@@ -62,17 +76,7 @@ export function MacroBox({ process, lastMessage, section, file, startMacro, stop
 
         
         if(Object.entries(columns).length ==0){
-          let resolvePromise 
-          const promise = new Promise((resolve, reject) =>{
-            resolvePromise = resolve;
-          })
-
-          toast.promise(promise, {
-            loading: json.loading_macro_toast,
-            success: json.started_macro_toast,
-          })
-          setPromise(section, file, resolvePromise)
-
+          
           __startMacro(fileContent, resolvePromise)
         }
         else{
@@ -81,7 +85,6 @@ export function MacroBox({ process, lastMessage, section, file, startMacro, stop
             return acc;
           }, {});
           setInputForms(initialForm)
-          setLoading(false)
           setModal(true)
         }
     })
@@ -115,23 +118,15 @@ export function MacroBox({ process, lastMessage, section, file, startMacro, stop
 
 
 
-    let resolvePromise 
-    const promise = new Promise((resolve, reject) =>{
-      resolvePromise = resolve;
-    })
-
-    toast.promise(promise, {
-      loading: json.loading_macro_toast,
-      success: json.started_macro_toast,
-    })
-    setPromise(section, file, resolvePromise)
+   
 
     socket.onopen = () => {
       console.log("WebSocket conectado para macro:", file);
+
     };
     
     socket.onmessage = (event) => {
-      onMessageMacro(event, setLoading, setExecutando, setProgresso, socket, json, file, resolvePromise)
+      onMessageMacro(event, setLoading, setExecutando, setProgresso, socket, json, file, () => resolvePromise(section, file))
     };
 
     socket.onclose = () => {
@@ -168,9 +163,33 @@ export function MacroBox({ process, lastMessage, section, file, startMacro, stop
  
   if(loading){
     return(
+      <>
       <Button className={`macroBox ${executando ? "macroAcionada" : ""}`} id={file} >
           <div className="spinner"></div>
       </Button>
+      {modal && (
+        
+        <>
+        <div className="overlay">
+          </div>
+
+            <div className="modal">
+              <div className="containerInputModal">
+                <button className="goBackButton" onClick={() =>setModal(false)}>{json.return}</button>
+
+                <Table_ inputHook={inputForm} columnsObj={columnsObj} setInputesHook={setInputForms}></Table_>
+
+                <form onSubmit={(e) => startMacroWithInput(e)}>
+                  
+                  
+                  <button className="buttonMacro" type="submit">{json.execute_macro}</button>
+                </form>
+              </div>
+          </div>
+          </>
+      )}
+      </>
+
     )
   }
   return (
@@ -227,26 +246,7 @@ export function MacroBox({ process, lastMessage, section, file, startMacro, stop
           {json.cancel_macro}
         </Button>
       )}
-      {modal && (
-        <>
-        <div className="overlay">
-        </div>
-
-          <div className="modal">
-            <div className="containerInputModal">
-              <button className="goBackButton" onClick={() =>setModal(false)}>{json.return}</button>
-
-              <Table_ inputHook={inputForm} columnsObj={columnsObj} setInputesHook={setInputForms}></Table_>
-
-              <form onSubmit={(e) => startMacroWithInput(e)}>
-                
-                
-                <button className="buttonMacro" type="submit">{json.execute_macro}</button>
-              </form>
-            </div>
-          </div>
-          </>
-      )}
+      
     </Button>
 
   );
