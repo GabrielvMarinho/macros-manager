@@ -11,32 +11,32 @@ function getFirstDayOfWeek(date) {
 export default function ({ history, api }) {
 
   const today = new Date();
-    const dayToday = today.getDate();
-    const monthToday = today.getMonth();
-    const yearToday = today.getFullYear().toString().split("").slice(-2).join("");
-    const firstDayOfWeek = getFirstDayOfWeek(today);
+  const dayToday = today.getDate();
+  const monthToday = today.getMonth();
+  const yearToday = today.getFullYear().toString().split("").slice(-2).join("");
+  const firstDayOfWeek = getFirstDayOfWeek(today);
 
-    const executedToday = [];
-    const executedThisWeek = [];
-    const executedOlder = [];
+  const executedToday = [];
+  const executedThisWeek = [];
+  const executedOlder = [];
 
-    for (let record of history) {
-      
-      const dateStr = record["time"].split(" - ")[0];
-      const [day, month, year] = dateStr.split("/").map(Number);
-      const specificDate = new Date(`20${year}`, month-1, day)
-    if (
-        day == dayToday &&
-        month == monthToday+1 &&
-        year == yearToday
-    ) {
-        executedToday.push(record);
-    } else if (specificDate >= firstDayOfWeek) {
-        executedThisWeek.push(record);
-    } else {
-        executedOlder.push(record);
-    }
-    }
+  for (let record of history) {
+    
+    const dateStr = record["time"].split(" - ")[0];
+    const [day, month, year] = dateStr.split("/").map(Number);
+    const specificDate = new Date(`20${year}`, month-1, day)
+  if (
+      day == dayToday &&
+      month == monthToday+1 &&
+      year == yearToday
+  ) {
+      executedToday.push(record);
+  } else if (specificDate >= firstDayOfWeek) {
+      executedThisWeek.push(record);
+  } else {
+      executedOlder.push(record);
+  }
+  }
 
   function renderSection(title, items) {
     return (

@@ -7,7 +7,7 @@ import { useJson } from "@/components/getLanguageJson";
 import Dashboard from "@/components/Dashboard";
 import Credits from "@/components/Credits";
 import SideBar from "@/components/SideBar";
-import { Button } from "antd";
+import { Button, Divider } from "antd";
 import LoadingSections from "@/components/loading/LoadingSections";
 import QueueMacros from "@/components/queue/QueueMacros";
 import { wsManager } from "@/utils/WebSocketManager";
@@ -15,30 +15,27 @@ import onMessageMacro from "@/utils/onMessageMacro";
 import onMessageMacroDashboard from "@/utils/onMessageMacroDashboard";
 import { resolvePromise } from "@/utils/toastPromiseManager";
 
-export default function AllSections() {
-  const [api, setAapi] = useState(null)
+export default function AllSections({api, json}) {
   const [sections, setSections] = useState([])
-  const {json, language, updateLanguage} = useJson()
-
   const navigate = useNavigate(); 
-
-
   const [queryValue, queryValueAgain] = useState(true)
-
   const [executingMap, setexecutingMap] = useState({})
   const [progressoMap, setProgressoMap] = useState({})
-
   const [queueMacros, setQueuedMacros] = useState({})
-
   const [listProcess, setListProcesses] = useState({})
   const [processesLastMessage, setProcessesLastMessage] = useState({})
 
-  useEffect(() =>{          
+  useEffect(() =>{     
+        
       if (
         api?.get_queue &&
         api?.get_list_processes &&
-        api?.get_processes_last_message
+        api?.get_processes_last_message &&
+        api?.get_sections
       ) {
+        fetchWrapper(api.get_folders()).then(data =>{
+            setSections(data.folders)
+        })
         fetchWrapper(api.get_queue()).then((data) => {
 
           setQueuedMacros({})
@@ -52,7 +49,6 @@ export default function AllSections() {
           
           
         });
-
         fetchWrapper(api.get_list_processes()).then((data) =>{
           
           setListProcesses(data)
@@ -86,23 +82,7 @@ export default function AllSections() {
 
 
   
-  useEffect(() => {
-    
-    async function AwaitApi(){
-      setAapi(await getApi())
-    }
-    AwaitApi()
-
-
-
-    if (api?.get_sections) {
-        fetchWrapper(api.get_folders()).then(data =>{
-        setSections(data.folders)
-        })
-      }
-
-    
-  }, [api]);
+  
 
 
   if(!json){
@@ -111,7 +91,6 @@ export default function AllSections() {
       )
   }
   
-  console.log("parent component", queueMacros)
   return (
     
       <div className='mainContainer'>  
@@ -132,14 +111,14 @@ export default function AllSections() {
                 ))}
             </div>
             }
-            <div className="lineBreaker"></div>
+            <Divider/>
             
             <Dashboard queryValueAgain={() =>queryValueAgain(!queryValue)} progressoMap={progressoMap} json={json} api={api} executingMap={executingMap} listProcess={listProcess} processesLastMessage={processesLastMessage}/>
         </div>
         
         <SideBar json={json} api={api}/>
 
-        <Credits/>
+        <Credits json={json}/>
             
       </div>
   );

@@ -9,30 +9,23 @@ import fetchWrapper from '@/utils/fetchWrapper';
 import LoadingHistory from '@/components/loading/LoadingHistory';
 import HistoryTable from '@/components/HistoryTable';
 
-export default function(){
-    const json = useJson()
-    const [api, setAapi] = useState(null)
+export default function({api, json}){
+
     const [history, setHistory] = useState()
 
     useEffect(() => {
-        
-        async function AwaitApi(){
-        setAapi(await getApi())
-        }
-        AwaitApi()
-
-        
         if (api?.get_history) {
         fetchWrapper(api.get_history()).then(data =>{
+            console.log(data)
             setHistory(data.history)
         })
         
         }
-    }, [api]);
+    }, []);
 
  
 
-    
+    console.log(history)
     return(
     <div className='mainContainer'>  
         <div>

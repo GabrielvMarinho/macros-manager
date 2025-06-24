@@ -407,9 +407,19 @@ class Api:
                 data[file.name] = file.read().decode("utf-8")
         return json.dumps(data)
 
-
+    def create_new_list(self):
+        res = asyncio.run(create_list())
+        if res.success:
+            json.dumps({"message":"sucess"})
+        else:
+            if(res.error.sqlite_errorname == "SQLITE_CONSTRAINT_UNIQUE"):
+                return json.dumps({"message":"duplicate_name"})
+            else:
+                return json.dumps({"message":"error"})
+            
     def get_history(self):
-        res = get_macros_history()
+        res = asyncio.run(get_macros_history())
+        print(res)
         res = {"history":res}
         return json.dumps(res)
 
@@ -424,9 +434,8 @@ if __name__ == "__main__":
     # webview.create_window("Gerenciador De Scripts", "frontend-2/build/index.html", js_api=api, confirm_close=True)
     webview.create_window("Gerenciador De Scripts", "localhost:3000", js_api=api, confirm_close=True, maximized=True, min_size=(1450, 850))
 
-    webview.start(debug=True)
-
-
+    asyncio.run(webview.start(debug=True))
+    
 
 
 

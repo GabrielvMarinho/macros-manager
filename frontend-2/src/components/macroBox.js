@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { useJson } from "./getLanguageJson";
 import { Form, useResolvedPath } from "react-router-dom";
 import Table_ from "./Table_";
-import { Button } from "antd";
+import { Button, Modal } from "antd";
 import fetchWrapper from "@/utils/fetchWrapper";
 import { getPromise, resolvePromise, setPromise } from "@/utils/toastPromiseManager";
 import cancelMacroAndUpdate from "@/utils/cancelMacroDashboard";
@@ -110,27 +110,29 @@ export function MacroBox({ json, lastMessage, section, queued, executing, setExe
       <Button className={`macroBox ${executing ? "macroAcionada" : ""}`} id={file} >
           <div className="spinner"></div>
       </Button>
-      {modal && (
         
         <>
-        <div className="overlay">
-          </div>
+      
 
-            <div className="modal">
+            <Modal
+            title="Execute macro"
+            closable={true}
+            open={modal}
+            onCancel={() =>setModal(false)}
+            onOk={() =>startMacroWithInput()}
+            size="large"
+            width={600}
+            height={400}
+            >
               <div className="containerInputModal">
-                <button className="goBackButton" onClick={() =>setModal(false)}>{json.return}</button>
 
                 <Table_ inputHook={inputForm} columnsObj={columnsObj} setInputesHook={setInputForms}></Table_>
 
-                <form onSubmit={(e) => startMacroWithInput(e)}>
                   
                   
-                  <button className="buttonMacro" type="submit">{json.execute_macro}</button>
-                </form>
               </div>
-          </div>
+          </Modal>
           </>
-      )}
       </>
 
     )
