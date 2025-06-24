@@ -4,7 +4,7 @@
 /*não é legal, não é produtivo - fran*/
 
 :root{
-    --text-dark:rgb(0, 0, 0);
+    --text-dark:rgba(0,0,0,0.88);
     --table-border: 1px solid #ccc;
     --flag-border:4px rgb(221, 221, 221) solid;
     --color-primary: #2382BA;
@@ -220,7 +220,7 @@ body{
     background-color: var(--tertiary-color);
     border: var(--tertiary-color-border);
     padding: 2%;
-    width:25%;
+    width:20%;
     height: 90%;
     border-radius: var(--border-radius);
 
@@ -235,7 +235,7 @@ body{
 .queueMacros{
     padding: 2%;
     
-    width:25%;
+    width:20%;
     background-color: var(--tertiary-color);
     border: var(--tertiary-color-border);
     height: 90%;
@@ -245,11 +245,11 @@ body{
     border-radius: var(--border-radius);
 }
 
-.pageTitleBack, .pageTitle{
-    font-size: 30px;
+.pageTitleBack, .pageTitle, .sidebarTitle{
+    font-size: 22px;
     margin: 0;
     margin-bottom: 25px;
-    font-weight: 700;
+    font-weight: 200;
     color: var(--text-dark);
 }
 .arrow img{

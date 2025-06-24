@@ -33,6 +33,7 @@ export default function(){
     const navigate = useNavigate();
 
     const activeKey = location.pathname.split('/').pop() || '';
+    
     const items = [
         { key: 'lists', label: 'Lists'},
         { key: '', label: 'Home'},

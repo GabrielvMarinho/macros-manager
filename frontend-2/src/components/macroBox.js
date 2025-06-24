@@ -41,7 +41,7 @@ export function MacroBox({ json, lastMessage, section, queued, executing, setExe
     setPromise(section, file, resolvePromise)
     
 
-    fetchWrapper(api.get_files(encodeURIComponent(section)+"/"+encodeURIComponent(file))).then( data =>{
+    fetchWrapper(api.get_files(section, file)).then( data =>{
         const columns = data["inputs.json"];
         const desc = data["data.json"];
         const fileContent = data["main.py"];

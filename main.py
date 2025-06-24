@@ -37,7 +37,7 @@ import io
 
 MACRO_EXECUTED = "macro_executed"
 MACRO_ERROR = "macro_error"
-
+ROOT_PATH_SHAREPOINT = "Shared%20Documents/Departamento%20PCP/Gerenciador%20de%20Scripts/Macros"
 
 def run_macro_module(sap_window, fileContent, section, file, params=None):
         obj = {"section_parent_folder": section, "parent_folder": file, "sap_window":sap_window}
@@ -93,7 +93,7 @@ class Api:
 
     def run_next_macro_queue(self):
         macro = self.processes_queue.popleft()
-        
+        print("runnrunrurnrunrurn")
         self.start_macro(macro["section"], macro["file"], macro["fileContent"], macro["params"])
 
         
@@ -173,10 +173,13 @@ class Api:
         return json.dumps(response)
 
     def stop_macro(self, section, file):
+        self.update_windows_dict(section+file)
         self.processes[f"{section}{file}"]["child"].terminate()
-        del self.processes[section+file]
-        
-        self.update_windows_dict(file+section)
+        try:
+            del self.processes[section+file]
+            del self.processes_last_message[f"{section}{file}"]
+        except Exception as e:
+            pass
         #more than a single place checks for this
         if self.are_there_macros_in_queue():
             self.run_next_macro_queue()
@@ -225,7 +228,7 @@ class Api:
                                     if(data):
                                         data = json.dumps(data)
                              
-                                    add_macro_to_history(urllib.parse.unquote(file), data)
+                                    db_add_macro_to_history(urllib.parse.unquote(file), data)
                                 except:
                                     pass
                                 
@@ -388,10 +391,10 @@ class Api:
 
 
 
-    def get_files(self, path):
+    def get_files(self, section, file):
         cntx = office365_api.get_sharepoint_ctx("BR-WEN-IND-PLANPRODUCAO")
-        
-        file_path = f"Shared%20Documents/Departamento%20PCP/Gerenciador%20de%20Scripts/Macros/{path}"
+        path = urllib.parse.quote(section)+"/"+urllib.parse.quote(file)
+        file_path = f"{ROOT_PATH_SHAREPOINT}/{path}"
 
         root_folder = cntx.web.get_folder_by_server_relative_url(file_path)
 
@@ -400,15 +403,24 @@ class Api:
         files = root_folder.files
 
         data = {}
-        for file in files:
-            if(file.name[-5:]==".json"):
-                data[file.name] = json.loads(file.read().decode("utf-8"))
+        for file_ in files:
+            if(file_.name[-5:]==".json"):
+                data[file_.name] = json.loads(file_.read().decode("utf-8"))
             else:
-                data[file.name] = file.read().decode("utf-8")
+                data[file_.name] = file_.read().decode("utf-8")
         return json.dumps(data)
+    
 
+    def add_macro_to_list(self, list_id, section, file):
+        path = urllib.parse.quote(section)+"/"+urllib.parse.quote(file)
+        file_path = f"{ROOT_PATH_SHAREPOINT}/{path}"
+
+        db_add_macro_to_list(list_id, section, file, file_path)
+
+    def get_lists(self):
+        return db_get_lists()
     def create_new_list(self):
-        res = asyncio.run(create_list())
+        res = asyncio.run(db_create_list())
         if res.success:
             json.dumps({"message":"sucess"})
         else:
@@ -418,7 +430,7 @@ class Api:
                 return json.dumps({"message":"error"})
             
     def get_history(self):
-        res = asyncio.run(get_macros_history())
+        res = asyncio.run(db_get_macros_history())
         print(res)
         res = {"history":res}
         return json.dumps(res)
@@ -430,7 +442,7 @@ if __name__ == "__main__":
     api = Api()
     ws_thread = threading.Thread(target=api.run_ws_server, daemon=True)
     ws_thread.start()
-    
+
     # webview.create_window("Gerenciador De Scripts", "frontend-2/build/index.html", js_api=api, confirm_close=True)
     webview.create_window("Gerenciador De Scripts", "localhost:3000", js_api=api, confirm_close=True, maximized=True, min_size=(1450, 850))
 

@@ -1,4 +1,4 @@
-import { Button, Divider, Menu } from "antd";
+import { Button, Flex, Menu } from "antd";
 
 export default function(){
     const item =[
@@ -14,11 +14,15 @@ export default function(){
     ]
     return(
         <div className='mainContainer'>  
-            <Button size="large">Create List</Button>
-            <Divider></Divider>
-            <Menu
-                items={item}
-            />
+            <div style={{display:"flex", flexDirection:"column", gap:"20px"}}>
+                <Button size="large">Create List</Button>
+                <Menu
+                    items={item}
+                />
+            </div>
+            <div className="listContainer">
+                
+            </div>
         </div>
     )
 }

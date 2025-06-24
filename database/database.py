@@ -13,28 +13,51 @@ cur.executescript("""
         time TEXT,
         data TEXT
     );
-    CREATE TABLE IF NOT EXISTS list_macros (
+    CREATE TABLE IF NOT EXISTS lists (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT UNIQUE
     );
     
-    CREATE TABLE IF NOT EXISTS macro_in_list(
+    CREATE TABLE IF NOT EXISTS macros_path(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        section TEXT,
+        file TEXT,
         path TEXT
     );
-    CREATE TABLE IF NOT EXISTS macro_in_list_to_list_macros(
+    CREATE TABLE IF NOT EXISTS macros_path_to_list(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         macro_id INTEGER,
         list_id INTEGER,
-        FOREIGN KEY (macro_id) references list_macros(id),
-        FOREIGN KEY (list_id) references macro_in_list(id)
-
+        UNIQUE (macro_id, list_id),
+        FOREIGN KEY (macro_id) references macros_path(id),
+        FOREIGN KEY (list_id) references lists(id)
     );
 """)
 
-def create_list(name):
+def db_get_lists():
     try:
-        cur.execute("INSERT INTO list_macros(name) values(?)", (name,))
+        cur.execute("""
+                    SELECT 
+                        lists.id,
+                        lists.name,
+                        macros_path.id,
+                        macros_path.path
+                    FROM lists
+                    INNER JOIN macros_path_to_list
+                        ON macros_path_to_list.list_id = lists.id
+                    INNER JOIN macros_path 
+                        ON macros_path_to_list.macro_id = macros_path.id 
+
+                    """)
+        res = cur.fetchall()
+        
+        return json.dumps({"sucess":res})
+
+    except Exception as e:
+        return json.dumps({"error":e})
+def db_create_list(name):
+    try:
+        cur.execute("INSERT INTO lists(name) values(?)", (name,))
         con.commit()
         return json.dumps({"sucess":"list created"})
 
@@ -42,30 +65,30 @@ def create_list(name):
         return json.dumps({"error":e})
         
 
-def add_macro_to_list(list_id, path):
+def db_add_macro_to_list(list_id, section, file, path):
     try:
-        macro_id = get_id_path(path)
-        cur.execute("INSERT INTO macro_in_list_to_list_macros(macro_id, list_id) values(?, ?)", (macro_id, list_id))
+        macro_id = db_get_id_path(path, section, file)
+        cur.execute("INSERT INTO macros_path_to_list(macro_id, list_id) values(?, ?)", (macro_id, list_id))
         con.commit()
         return json.dumps({"success":"macro added"})
     except Exception as e:
         print(e)
         return json.dumps({"error":e})
-def get_id_path(path):
+def db_get_id_path(path, section, file):
     try:
-        cur.execute(f"SELECT id FROM macro_in_list WHERE path = ?", (path,))
+        cur.execute(f"SELECT id FROM macros_path WHERE path = ?", (path,))
         rows = cur.fetchall()
-        if rows[0]:
-            return rows[0]
+        if rows:
+            return rows[0][0]
         else:
-            cur.execute(f"INSERT INTO macro_in_list(path) values(?)", (path,))
+            cur.execute(f"INSERT INTO macros_path(path, section, file) values(?, ?, ?)", (path, section, file))
             id = cur.lastrowid
             con.commit()
             return id
     except Exception as e:
         print(e)
 
-def add_macro_to_history(name, data):
+def db_add_macro_to_history(name, data):
     time = datetime.now()
     time = time.strftime("%d/%m/%y - %H:%M:%S")
     
@@ -75,7 +98,7 @@ def add_macro_to_history(name, data):
     except Exception as e:
         print(e)
 
-def get_macro_output(id):
+def db_get_macro_output(id):
     try:
         print("id, ", str(id))
         cur.execute(f"SELECT data FROM macros_history WHERE id = (?)", (id,))
@@ -87,7 +110,7 @@ def get_macro_output(id):
     except Exception as e:
         print(e)
 
-async def get_macros_history():
+async def db_get_macros_history():
     try:
         cur.execute("SELECT * FROM macros_history")
         rows = cur.fetchall()
