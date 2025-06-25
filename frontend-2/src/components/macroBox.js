@@ -6,10 +6,11 @@ import { toast } from "sonner";
 import { useJson } from "./getLanguageJson";
 import { Form, useResolvedPath } from "react-router-dom";
 import Table_ from "./Table_";
-import { Button, Modal } from "antd";
+import { Button, Card, Modal } from "antd";
 import fetchWrapper from "@/utils/fetchWrapper";
 import { getPromise, resolvePromise, setPromise } from "@/utils/toastPromiseManager";
 import cancelMacroAndUpdate from "@/utils/cancelMacroDashboard";
+import ManageLists from "./ManageLists";
 
 export function MacroBox({ json, lastMessage, section, queued, executing, setExecuting, file, startMacro, stopMacro, progresso, queryValueAgain, api }) {
   const [modal, setModal] = useState(false)
@@ -49,10 +50,6 @@ export function MacroBox({ json, lastMessage, section, queued, executing, setExe
         setFileContent(fileContent)
         setDesc(desc);
 
-
-        
-
-        
         if(Object.entries(columns).length ==0){
           
           __startMacro(fileContent, resolvePromise)
@@ -140,12 +137,12 @@ export function MacroBox({ json, lastMessage, section, queued, executing, setExe
   
   
   return (
-    <Button className={`macroBox ${executing || queued ? "macroAcionada" : ""}`} id={file}>
+    <Card title={file} extra={<ManageLists api={api} section={section} file={file}/>} className={`macroBox ${executing || queued ? "macroAcionada" : ""}`} id={file}>
 
-      <div style={{ display: "flex", gap: "20px", flexDirection: "column" }}>
+      {/* <div style={{ display: "flex", gap: "20px", flexDirection: "column" }}>
         <label className="title">{file}</label>
     
-      </div>
+      </div> */}
       {queued ? 
         <label className="title">Macro na fila</label>
           
@@ -153,7 +150,7 @@ export function MacroBox({ json, lastMessage, section, queued, executing, setExe
         :
 
         executing && (
-          <div style={{ display: "flex", alignItems:"center", justifyContent:"center", gap: "20px", flexDirection: "column", width: "100%" }}>
+          <div style={{ display: "flex", alignItems:"center", justifyContent:"center", gap: "10px", flexDirection: "column", width: "100%" }}>
             <label>{progresso !== null ? `${Math.round(progresso)}%` : "executing..."}</label>
             <div className="loading-container">
               <div
@@ -180,7 +177,7 @@ export function MacroBox({ json, lastMessage, section, queued, executing, setExe
 
       
       {!executing && !queued && (
-        <Button type="primary" success size="medium"
+        <Button success size="medium"
           id={"executeButton_" + file}
           className="buttonMacro"
           onClick={() => tryStartMacro()}
@@ -192,7 +189,7 @@ export function MacroBox({ json, lastMessage, section, queued, executing, setExe
 
       
       
-    </Button>
+    </Card>
 
   );
 }

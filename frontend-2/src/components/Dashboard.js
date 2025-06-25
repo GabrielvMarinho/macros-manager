@@ -9,9 +9,6 @@ import { MacroBoxDashboard } from "./MacroBoxDashboard";
 
 
 export default function Dashboard({json, api, executingMap, progressoMap, listProcess, processesLastMessage, queryValueAgain}){
-  console.log("")
-  
-
 
 
   return (
@@ -26,6 +23,7 @@ export default function Dashboard({json, api, executingMap, progressoMap, listPr
             const progresso = progressoMap[section+file]
             return (
               <MacroBoxDashboard
+              api={api}
               progresso={progresso}
                 json={json}
                 executando={executing}

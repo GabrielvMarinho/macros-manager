@@ -9,7 +9,8 @@
     --flag-border:4px rgb(221, 221, 221) solid;
     --color-primary: #2382BA;
     --color-primary-light: #2383ba81;
-
+    --icon-width:22px;
+    --icon-height:22px;
     --secondary-color: #a4d8e32a;
     --secondary-color-border: 1px #a4d8e371 solid;
 
@@ -49,7 +50,7 @@ body{
 }
 .loading-container {
     transition: 0.4s;
-    width: 80%;
+    width: 60%;
     margin-inline: auto;
     height: 20px;
     border-radius: 5px;
@@ -91,15 +92,7 @@ body{
     transition: 0.4s;
     border: 1px solid var(--color-primary)
 }
-.macroBox:hover .loading-bar{
-    transition: 0.4s;
-    background-color: var(--color-primary) !important
-}
-.macroBox:hover .loading-container{
-    transition: 0.4s;
 
-    border: 1px solid var(--color-primary)
-}
 .dashboardContainer{
     height: 40%;
     border-radius: var(--border-radius);
@@ -187,14 +180,12 @@ body{
 .macroBox{
     display: flex;
     flex-direction: column;
-    width: 220px;
+    width: 260px;
     height: 200px;
     justify-content: space-between;
     transition: 0.5s;
-    padding: 20px;
     text-wrap: wrap;
     word-break: break-all;
-    padding-inline: 20px;
 }
 .macroBox .title{
 
@@ -252,19 +243,25 @@ body{
     font-weight: 200;
     color: var(--text-dark);
 }
-.arrow img{
-    width: 25px;
-    height: 25px;
-    transform: scale(-1, 1);
+.ant-card-extra{
+    display: flex;
+    align-items: center;
 }
-.returnArrow img{
-    width: 30px;
-    height: 30px;
-    transform: scale(-1, 1);
+.iconList{
+    
+    margin-block: auto;
+    width: var(--icon-width);
+    height: var(--icon-height);
 }
-.returnArrow:hover{
+.iconList:hover, .returnArrow:hover{
     cursor: pointer;
 }
+.returnArrow img{
+    width: var(--icon-width);
+    height: var(--icon-height);
+    transform: scale(-1, 1);
+}
+
 .divTitleBack{
     margin-inline: auto;
     width: fit-content;
@@ -288,7 +285,7 @@ body{
     height: 30px;
 }
 .shimmerMacroBox{
-    width: 220px;
+    width: 260px;
     height: 200px;
 }
 .shimmerSectionBox{

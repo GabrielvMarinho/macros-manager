@@ -34,6 +34,30 @@ cur.executescript("""
     );
 """)
 
+async def db_get_lists_macro(path):
+    try:
+        cur.execute("""
+                    SELECT 
+                        lists.id,
+                        lists.name,
+                        macros_path.id,
+                        macros_path.path
+                    FROM lists 
+                    INNER JOIN macros_path_to_list
+                        ON macros_path_to_list.list_id = lists.id
+                    INNER JOIN macros_path 
+                        ON macros_path_to_list.macro_id = macros_path.id 
+                    WHERE macros_path.path = (?) 
+
+                    """, (path,))
+        res = cur.fetchall()
+        
+        return json.dumps({"sucess":{"message":res}})
+
+    except Exception as e:
+        return json.dumps({"error":{"message":e}})
+    
+
 def db_get_lists():
     try:
         cur.execute("""
@@ -55,6 +79,7 @@ def db_get_lists():
 
     except Exception as e:
         return json.dumps({"error":e})
+    
 def db_create_list(name):
     try:
         cur.execute("INSERT INTO lists(name) values(?)", (name,))
