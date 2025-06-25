@@ -425,38 +425,45 @@ class Api:
 
 
 
-
-
+    def get_lists(self):
+        try:
+            res = asyncio.run(db_get_lists())
+            res = json.loads(res)
+            list = []
+            
+            for object in res["lists"]:
+                list.append({"id":object[0], "name":object[1]})
+            return list
+        except:
+            return {}
     def get_lists_macro(self, section, file):
         path = urllib.parse.quote(section)+"/"+urllib.parse.quote(file)
         file_path = f"{ROOT_PATH_SHAREPOINT}/{path}"
 
         res = asyncio.run(db_get_lists_macro(file_path)) 
-        print(res)
-        res = json.loads(res)
+        macro_list_relation = json.loads(res)
 
-        if res["sucess"]:
-            return res["sucess"]["message"]
+        all_lists = self.get_lists()
+        
+        for list_ in all_lists:
+            list_["has_this_macro"] = False
+
+        if macro_list_relation["success"]:
+            for register in macro_list_relation["success"]["message"]:
+                result = next(obj for obj in all_lists if obj["id"] == register[0])
+                if(result):
+                    result["has_this_macro"] = True
+            print(all_lists)
+            return json.dumps(all_lists)
         else:
             print(res["error"]["message"])
         
     
-
-
-
-
-
-
-
-
-
-
-
     def create_new_list(self):
         res = asyncio.run(db_create_list())
         res = json.loads(res)
         if res.success:
-            json.dumps({"message":"sucess"})
+            json.dumps({"message":"success"})
         else:
             if(res.error.sqlite_errorname == "SQLITE_CONSTRAINT_UNIQUE"):
                 return json.dumps({"message":"duplicate_name"})

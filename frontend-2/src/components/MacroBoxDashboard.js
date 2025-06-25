@@ -13,7 +13,7 @@ import ManageLists from "./ManageLists";
 
 export function MacroBoxDashboard({ api, json, lastMessage, section, file, stopMacro, executando, progresso, queryValueAgain }) {
 
-
+  
     
   
   if(!executando){
