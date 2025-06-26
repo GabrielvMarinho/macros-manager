@@ -38,8 +38,11 @@ export default function({api, section, file}){
     return(
         <>
         <img className="icon" onClick={() =>queryLists()} src={listIcon}/>
-        <Modal open={modal} footer={null} onCancel={() =>setModal(false)}>
-            {lists && lists.length>0?
+        <Modal width={"250px"} title={"Your Lists"} open={modal} footer={null} onCancel={() =>setModal(false)}>
+	   
+	    
+	    
+	    {lists && lists.length>0?
                 lists.map((list) =>(
                     
                     <Checkbox id = {list.id} defaultChecked={list.has_this_macro} onChange={updateLists}>{list.name}</Checkbox>

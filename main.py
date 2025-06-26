@@ -543,17 +543,21 @@ class Api:
             print(res["error"]["message"])
         
     
-    def create_new_list(self):
-        res = asyncio.run(db_create_list())
-        res = json.loads(res)
-        if res.success:
-            json.dumps({"message":"success"})
-        else:
-            if(res.error.sqlite_errorname == "SQLITE_CONSTRAINT_UNIQUE"):
-                return json.dumps({"message":"duplicate_name"})
-            else:
-                return json.dumps({"message":"error"})
-        pass
+    def create_new_list(self, name):
+        try:
+            asyncio.run(db_create_list(name))
+
+            
+            return json.dumps({
+                "status": "success",
+                "list_name": name
+            })
+
+        except Exception as e:
+            print(e)
+            return json.dumps({
+                "status": "error"
+            })
     def get_history(self):
         res = asyncio.run(db_get_macros_history())
         res = {"history":res}
@@ -566,7 +570,6 @@ if __name__ == "__main__":
     api = Api()
     ws_thread = threading.Thread(target=api.run_ws_server, daemon=True)
     ws_thread.start()
-    api.add_macro_to_list(1, "Programação", "fran")
 
     # webview.create_window("Gerenciador De Scripts", "frontend-2/build/index.html", js_api=api, confirm_close=True)
     webview.create_window("Gerenciador De Scripts", "localhost:3000", js_api=api, confirm_close=True, maximized=True, min_size=(1450, 850))

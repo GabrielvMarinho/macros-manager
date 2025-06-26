@@ -84,14 +84,11 @@ async def db_get_macros_of_list(list_id):
     res = cur.fetchall()
     return json.dumps({"lists":res})
     
-def db_create_list(name):
-    try:
-        cur.execute("INSERT INTO lists(name) values(?)", (name,))
-        con.commit()
-        return json.dumps({"success":"list created"})
+async def db_create_list(name):
+    cur.execute("INSERT INTO lists(name) values(?)", (name,))
+    con.commit()
+    return json.dumps({"success":"list created"})
 
-    except Exception as e:
-        return json.dumps({"error":e})
         
 async def db_remove_macro_of_list(list_id, path, section, file):
     macro_id = db_get_id_path(path, section, file)

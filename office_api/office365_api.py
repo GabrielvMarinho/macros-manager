@@ -8,7 +8,6 @@ from office365.runtime.auth.user_credential import UserCredential
 def get_sharepoint_ctx(shrepoint_team):
     url = f"https://weg365.sharepoint.com/teams/{shrepoint_team}"
     load_dotenv()
-
     return ClientContext(url).with_credentials(UserCredential(os.getenv("SHAREPOINT_API_LOGIN"), os.getenv("SHAREPOINT_API_KEY")))
 
 def get_sharepoint_list(ctx, list_relative_url):
