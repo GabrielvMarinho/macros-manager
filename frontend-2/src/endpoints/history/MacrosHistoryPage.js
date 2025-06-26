@@ -16,7 +16,6 @@ export default function({api, json}){
     useEffect(() => {
         if (api?.get_history) {
         fetchWrapper(api.get_history()).then(data =>{
-            console.log(data)
             setHistory(data.history)
         })
         
@@ -25,7 +24,6 @@ export default function({api, json}){
 
  
 
-    console.log(history)
     return(
     <div className='mainContainer'>  
         <div>

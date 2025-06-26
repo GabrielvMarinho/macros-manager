@@ -12,7 +12,7 @@ import { getPromise, resolvePromise, setPromise } from "@/utils/toastPromiseMana
 import cancelMacroAndUpdate from "@/utils/cancelMacroDashboard";
 import ManageLists from "./ManageLists";
 
-export function MacroBox({ json, lastMessage, section, queued, executing, setExecuting, file, startMacro, stopMacro, progresso, queryValueAgain, api }) {
+export function MacroBox({ json, showSection=false, lastMessage, section, queued, executing, setExecuting, file, startMacro, stopMacro, progresso, queryValueAgain, api }) {
   const [modal, setModal] = useState(false)
 
   const [columnsObj, setColumnsObj] = useState()
@@ -137,7 +137,7 @@ export function MacroBox({ json, lastMessage, section, queued, executing, setExe
   
   
   return (
-    <Card title={file} extra={<ManageLists api={api} section={section} file={file}/>} className={`macroBox ${executing || queued ? "macroAcionada" : ""}`} id={file}>
+    <Card title={showSection?section+" | "+file:file} extra={<ManageLists api={api} section={section} file={file}/>} className={`macroBox`} id={file}>
 
       {/* <div style={{ display: "flex", gap: "20px", flexDirection: "column" }}>
         <label className="title">{file}</label>
@@ -150,25 +150,31 @@ export function MacroBox({ json, lastMessage, section, queued, executing, setExe
         :
 
         executing && (
-          <div style={{ display: "flex", alignItems:"center", justifyContent:"center", gap: "10px", flexDirection: "column", width: "100%" }}>
-            <label>{progresso !== null ? `${Math.round(progresso)}%` : "executing..."}</label>
-            <div className="loading-container">
-              <div
-                className="loading-bar"
-                style={{
-                  width: `${progresso || 0}%`,
-                  backgroundColor: "black",
-                }}
-              ></div>
-            </div>
+          <div>
+            <div style={{display:"flex", gap:"10px", justifyContent:"space-between"}}>
+              
             <Button type="primary" danger size="medium"
             id={"cancelButton_" + file}
             className="cancelButtonMacro"
             
             onClick={() =>{cancelMacroAndUpdate(() =>stopMacro(section, file), file, json, queryValueAgain)}}
-          >
-            {json.cancel_macro}
-          </Button>
+            >
+              {json.cancel_macro}
+            </Button>
+            <div style={{display:"flex", gap:"10px", width:"60%", alignItems:"center"}}>
+              <label className="label-loading-bar">{progresso !== null ? `${Math.round(progresso)}%` : "0%"}</label>
+                <div className="loading-container">
+                  <div
+                      className="loading-bar"
+                      style={{
+                        width: `${progresso || 0}%`,
+                        backgroundColor: "black",
+                      }}
+                    ></div>
+                </div>
+              </div>
+            </div>
+
 
           </div>
         )

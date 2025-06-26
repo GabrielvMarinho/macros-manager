@@ -18,7 +18,6 @@ export default function Dashboard({json, api, executingMap, progressoMap, listPr
           {Object.entries(listProcess).map(([key, value]) => {
             const file = value["file"]
             const section = value["section"]
-            console.log(executingMap)
             const executing = executingMap[section+file]
             const progresso = progressoMap[section+file]
             return (

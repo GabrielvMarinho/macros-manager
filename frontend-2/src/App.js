@@ -64,7 +64,7 @@ export default function(){
                         <Routes>
                             <Route path='/' element={<AllSections api={api} json={json}/>}/>
                             <Route path='/history' element={<MacrosHistoryPage api={api} json={json}/>}/>
-                            <Route path='/lists' element={<ListsPage/>}/>
+                            <Route path='/lists' element={<ListsPage api={api} json={json}/>}/>
                             <Route path='/section/:section' element={<SectionMacros api={api} json={json}/>}/>
                             <Route path='/*' element={<NotFoundPage/>}/>
                         </Routes>

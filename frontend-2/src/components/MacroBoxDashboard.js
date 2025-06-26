@@ -20,33 +20,38 @@ export function MacroBoxDashboard({ api, json, lastMessage, section, file, stopM
     return <></>
   }
   return (
-    <Card title={file} extra={<ManageLists api={api} section={section} file={file}/>} className={`macroBox ${executando ? "macroAcionada" : ""}`} id={file}>
+    <Card title={file} extra={<ManageLists api={api} section={section} file={file}/>} className={`macroBox`} id={file}>
     
     
 
       
-        <div style={{ display: "flex", alignItems:"center", justifyContent:"center", gap: "10px", flexDirection: "column", width: "100%" }}>
-                    <label>{progresso !== null ? `${Math.round(progresso)}%` : "executing..."}</label>
-                    <div className="loading-container">
-                      <div
-                        className="loading-bar"
-                        style={{
-                          width: `${progresso || 0}%`,
-                          backgroundColor: "black",
-                        }}
-                      ></div>
-                    </div>
-                    <Button type="primary" danger size="medium"
-                      id={"cancelButton_" + file}
-                      className="cancelButtonMacro"
-                      onClick={() =>{cancelMacroAndUpdate(() =>stopMacro(section, file), file, json, queryValueAgain)}}
-                    >
-                          {json.cancel_macro}
-              </Button>
-        
-                  </div>
-      
+        <div>
+          <div style={{display:"flex", gap:"10px", justifyContent:"space-between"}}>
+            
+          <Button type="primary" danger size="medium"
+          id={"cancelButton_" + file}
+          className="cancelButtonMacro"
+          
+          onClick={() =>{cancelMacroAndUpdate(() =>stopMacro(section, file), file, json, queryValueAgain)}}
+          >
+            {json.cancel_macro}
+          </Button>
+          <div style={{display:"flex", gap:"10px", width:"60%", alignItems:"center"}}>
+            <label className="label-loading-bar">{progresso !== null ? `${Math.round(progresso)}%` : "0%"}</label>
+              <div className="loading-container">
+                <div
+                    className="loading-bar"
+                    style={{
+                      width: `${progresso || 0}%`,
+                      backgroundColor: "black",
+                    }}
+                  ></div>
+              </div>
+            </div>
+          </div>
 
+
+        </div>
      
 
     </Card>
