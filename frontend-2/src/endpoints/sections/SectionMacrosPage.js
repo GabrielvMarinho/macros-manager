@@ -87,7 +87,7 @@ export default function SectionMacrosPage({api, json}) {
            <h1 className='pageTitleBack'>{section}</h1>
 
           <Link className="returnArrow" to="/">
-            <img src={Arrow}></img>
+            <img className="icon" src={Arrow}></img>
           </Link>
       </div>
       {!macros?

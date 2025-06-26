@@ -5,7 +5,7 @@ import getApi from "@/utils/api";
 import fetchWrapper from "@/utils/fetchWrapper";
 import { MacroBox } from "./macroBox";
 import { MacroBoxDashboard } from "./MacroBoxDashboard";
-
+import Refresh from "@/icons/refresh.png"
 
 
 export default function Dashboard({json, api, executingMap, progressoMap, listProcess, processesLastMessage, queryValueAgain}){
@@ -13,7 +13,10 @@ export default function Dashboard({json, api, executingMap, progressoMap, listPr
 
   return (
    <>
-    <h1 className="pageTitle">{json.dashboard}</h1>
+    <div style={{display:"flex", gap:"10px"}}>
+      <h1 className="pageTitle">{json.dashboard}</h1>
+      <img style={{marginTop:"2px"}} onClick={() =>queryValueAgain()} className="icon" src={Refresh}></img>
+    </div>
         <div className="dashboardMacroContainer">
           {Object.entries(listProcess).map(([key, value]) => {
             const file = value["file"]

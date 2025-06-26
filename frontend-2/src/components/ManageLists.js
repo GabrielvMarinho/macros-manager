@@ -37,7 +37,7 @@ export default function({api, section, file}){
     
     return(
         <>
-        <img className="iconList" onClick={() =>queryLists()} src={listIcon}/>
+        <img className="icon" onClick={() =>queryLists()} src={listIcon}/>
         <Modal open={modal} footer={null} onCancel={() =>setModal(false)}>
             {lists && lists.length>0?
                 lists.map((list) =>(

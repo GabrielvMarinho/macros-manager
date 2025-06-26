@@ -117,7 +117,7 @@ body{
 }
 .dashboardMacroContainer{
     border: var(--secondary-color-border);
-
+    position: relative;
     background-color: var(--secondary-color);
     border-radius: var(--border-radius);
     overflow-y: auto;
@@ -250,18 +250,17 @@ body{
     display: flex;
     align-items: center;
 }
-.iconList{
-    
-    margin-block: auto;
+.icon{
     width: var(--icon-width);
     height: var(--icon-height);
 }
-.iconList:hover, .returnArrow:hover{
+.icon:hover{
     cursor: pointer;
+
 }
+
+
 .returnArrow img{
-    width: var(--icon-width);
-    height: var(--icon-height);
     transform: scale(-1, 1);
 }
 

@@ -37,7 +37,9 @@ export function MacroBoxDashboard({ api, json, lastMessage, section, file, stopM
             {json.cancel_macro}
           </Button>
           <div style={{display:"flex", gap:"10px", width:"60%", alignItems:"center"}}>
-            <label className="label-loading-bar">{progresso !== null ? `${Math.round(progresso)}%` : "0%"}</label>
+             <label className="label-loading-bar">
+                {progresso !== null && !isNaN(progresso) ? `${Math.round(progresso)}%` : "0%"}
+              </label>
               <div className="loading-container">
                 <div
                     className="loading-bar"
