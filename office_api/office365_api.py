@@ -1,14 +1,15 @@
+from dotenv import load_dotenv
 import os
 from datetime import datetime, timezone
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.runtime.auth.user_credential import UserCredential
 
-
 def get_sharepoint_ctx(shrepoint_team):
     url = f"https://weg365.sharepoint.com/teams/{shrepoint_team}"
-    return ClientContext(url).with_credentials(UserCredential("login", "password"))
+    load_dotenv()
 
+    return ClientContext(url).with_credentials(UserCredential(os.getenv("SHAREPOINT_API_LOGIN"), os.getenv("SHAREPOINT_API_KEY")))
 
 def get_sharepoint_list(ctx, list_relative_url):
     sp_list = ctx.web.get_list(list_relative_url)
