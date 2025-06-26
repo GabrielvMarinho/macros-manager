@@ -3,7 +3,6 @@ import { toast } from "sonner";
 
 
 export default function onMessageMacro(event, setLoading, setExecutando, setProgresso, socket, json, actualFileName, resolvePromise, setApi){
-    console.log(event)
     const msg = event.data;
     switch (msg){
         case "macro_started":

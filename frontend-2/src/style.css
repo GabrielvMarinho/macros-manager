@@ -4,12 +4,13 @@
 /*não é legal, não é produtivo - fran*/
 
 :root{
-    --text-dark:rgb(0, 0, 0);
+    --text-dark:rgba(0,0,0,0.88);
     --table-border: 1px solid #ccc;
     --flag-border:4px rgb(221, 221, 221) solid;
     --color-primary: #2382BA;
     --color-primary-light: #2383ba81;
-
+    --icon-width:20px;
+    --icon-height:20px;
     --secondary-color: #a4d8e32a;
     --secondary-color-border: 1px #a4d8e371 solid;
 
@@ -17,7 +18,7 @@
     --tertiary-color-border: 1px #0091c536 solid;
     --border-radius: 8px;
 
-    --body-color:#96cbe21e;
+    --body-color:#ffffff1e;
     --line-breaker:#cececeb0;
     --button-sucess-border: 1px hsl(145, 92%, 87%) solid;
     --button-sucess-background-color:  hsl(143, 85%, 96%);
@@ -47,13 +48,15 @@ body{
 .mainPageGrouper{
     display: flex;
 }
+.label-loading-bar{
+    width: 45px;
+}
 .loading-container {
     transition: 0.4s;
-    width: 80%;
-    margin-inline: auto;
+    width: 85%;
     height: 20px;
     border-radius: 5px;
-    border: 1px solid rgb(0, 0, 0);
+    border: 1px solid var(--text-dark);
     position: relative;
 }
 
@@ -91,52 +94,13 @@ body{
     transition: 0.4s;
     border: 1px solid var(--color-primary)
 }
-.macroBox:hover .loading-bar{
-    transition: 0.4s;
-    background-color: var(--color-primary) !important
-}
-.macroBox:hover .loading-container{
-    transition: 0.4s;
 
-    border: 1px solid var(--color-primary)
-}
 .dashboardContainer{
     height: 40%;
     border-radius: var(--border-radius);
     background-color: var(--secondary-color);
 }
-.navBarItem{
-    transition: 0.5s;
-    text-decoration: none;
-    color: var(--color-primary);
-    opacity: 0.5;
-    padding: 10px;
-    margin: 5px;
-    border-bottom: 1px var(--color-primary) solid;
-    font-size: 17px;
-    font-weight: 400;
-}
-.activatedNavBarItem{
-    transition: 0.5s;
-    margin: 5px;
-    opacity: 1;
-    text-decoration: none;
-    color: var(--color-primary);
-    padding: 13px;
-    border-bottom: 3px var(--color-primary) solid;
-    font-size: 24px;
-    font-weight: 700;
-}
 
-.navBar{
-    height: 20vh;
-}
-.navBarCollection{
-    height: 15vh;
-    display: flex;
-    justify-content: center;
-    align-items: end;
-}
 .containerMainPage{
     display: flex;
     flex-direction: column;
@@ -144,9 +108,16 @@ body{
     height: 100%;
     
 }
+.navBar{
+    display: flex;
+    width: 100vw;
+    justify-content: center;
+    margin-top: 5vh;
+    margin-bottom: 5vh;
+}
 .dashboardMacroContainer{
     border: var(--secondary-color-border);
-
+    position: relative;
     background-color: var(--secondary-color);
     border-radius: var(--border-radius);
     overflow-y: auto;
@@ -156,7 +127,8 @@ body{
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 20px;
+    align-items: center;
+    gap: 15px;
     padding: 20px;
 }
 ::-webkit-scrollbar {
@@ -194,6 +166,10 @@ body{
     gap: 30px;
     align-items: start;
 }
+.macroContainer{
+    gap: 15px;
+
+}
 .historyContainer{
     margin: 0px;
 }
@@ -211,14 +187,12 @@ body{
 .macroBox{
     display: flex;
     flex-direction: column;
-    width: 220px;
-    height: 200px;
+    width: 300px;
+    height: 140px;
     justify-content: space-between;
     transition: 0.5s;
-    padding: 20px;
     text-wrap: wrap;
     word-break: break-all;
-    padding-inline: 20px;
 }
 .macroBox .title{
 
@@ -227,10 +201,6 @@ body{
 }
 
 
-.macroAcionada{
-    scale: 0.95;
-    opacity: 0.7;
-}
 
 
 
@@ -244,7 +214,7 @@ body{
     background-color: var(--tertiary-color);
     border: var(--tertiary-color-border);
     padding: 2%;
-    width:25%;
+    width:20%;
     height: 90%;
     border-radius: var(--border-radius);
 
@@ -259,7 +229,7 @@ body{
 .queueMacros{
     padding: 2%;
     
-    width:25%;
+    width:20%;
     background-color: var(--tertiary-color);
     border: var(--tertiary-color-border);
     height: 90%;
@@ -269,26 +239,30 @@ body{
     border-radius: var(--border-radius);
 }
 
-.pageTitleBack, .pageTitle{
-    font-size: 30px;
+.pageTitleBack, .pageTitle, .sidebarTitle{
+    font-size: 22px;
     margin: 0;
     margin-bottom: 25px;
-    font-weight: 700;
+    font-weight: 200;
     color: var(--text-dark);
 }
-.arrow img{
-    width: 25px;
-    height: 25px;
-    transform: scale(-1, 1);
+.ant-card-extra{
+    display: flex;
+    align-items: center;
 }
-.returnArrow img{
-    width: 30px;
-    height: 30px;
-    transform: scale(-1, 1);
+.icon{
+    width: var(--icon-width);
+    height: var(--icon-height);
 }
-.returnArrow:hover{
+.icon:hover{
     cursor: pointer;
 }
+
+
+.returnArrow img{
+    transform: scale(-1, 1);
+}
+
 .divTitleBack{
     margin-inline: auto;
     width: fit-content;
@@ -302,7 +276,7 @@ body{
 
 
 .shimmerMacroBox, .shimmerSectionBox, .shimmerHistoryBox {
-    background: linear-gradient(-45deg, var(--body-color) 30%, #79a5b846 50%, var(--body-color) 70%);
+    background: linear-gradient(-45deg, #e7e7e746 30%, #acacac46 50%, var(--body-color) 70%);
     background-size: 400%;
     animation: shimmer 1s infinite ease-in;
     border-radius: var(--border-radius);
@@ -312,8 +286,8 @@ body{
     height: 30px;
 }
 .shimmerMacroBox{
-    width: 220px;
-    height: 200px;
+    width: 300px;
+    height: 140px;
 }
 .shimmerSectionBox{
     width: 18%;
@@ -564,17 +538,4 @@ td{
     position: absolute;
     bottom: 3%;
     left: 3%;
-}
-.lineBreaker{
-    height: 1px;
-    width: 100%;
-    background-color: var(--line-breaker);
-    margin-block: 30px;
-
-}
-.lineBreakerSettings{
-    height: 1px;
-    width: 100%;
-    background-color: var(--line-breaker);
-    margin-block: 10px;
 }

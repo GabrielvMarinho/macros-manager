@@ -13,32 +13,27 @@ import Arrow from "@/icons/arrow.png"
 import { wsManager } from '@/utils/WebSocketManager';
 import onMessageMacroDashboard from '@/utils/onMessageMacroDashboard';
 import { resolvePromise } from '@/utils/toastPromiseManager';
-export default function SectionMacros() {
+export default function SectionMacrosPage({api, json}) {
 
   const { section } = useParams();
-  
-  const [api, setAapi] = useState(null)
   const [macros, setMacros] = useState()
-  const {json, language, updateLanguage} = useJson()
-
-
   const [queryValue, queryValueAgain] = useState(true)
-
   const [executingMap, setExecutingMap] = useState({})
   const [progressoMap, setProgressoMap] = useState({})
-
   const [queueMacros, setQueuedMacros] = useState({})
-
   const [processesLastMessage, setProcessesLastMessage] = useState({})
 
 
   useEffect(() =>{        
-        console.log("queyr")
         if (
           api?.get_queue &&
           api?.get_list_processes &&
-          api?.get_processes_last_message
+          api?.get_processes_last_message &&
+          api?.get_folders
         ) {
+          fetchWrapper(api.get_folders(encodeURIComponent(section))).then(data =>{
+            setMacros(data?.folders)
+          })
           fetchWrapper(api.get_queue()).then((data) => {
             setQueuedMacros({})
             data.queue.forEach((macro) => {
@@ -80,32 +75,6 @@ export default function SectionMacros() {
     }, [api, queryValue])
 
 
-
-
-    useEffect(() => {
-      async function AwaitApi(){
-        setAapi(await getApi())
-      }
-      AwaitApi()
-
-      if (api) {
-        fetchWrapper(api.get_folders(encodeURIComponent(section))).then(data =>{
-
-
-          setMacros(data?.folders)
-
-          
-        })
-        
-
-      }
-    }, [api]);
-
-
-
- 
- 
-
   if(!json){
        return(
         <></>
@@ -118,7 +87,7 @@ export default function SectionMacros() {
            <h1 className='pageTitleBack'>{section}</h1>
 
           <Link className="returnArrow" to="/">
-            <img src={Arrow}></img>
+            <img className="icon" src={Arrow}></img>
           </Link>
       </div>
       {!macros?

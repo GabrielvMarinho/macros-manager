@@ -1,4 +1,4 @@
-import { Button, theme } from "antd";
+import { Button, Divider, theme } from "antd";
 import Language from "./Language";
 import OpenSap from "./OpenSap";
 import Settings from "./Settings";
@@ -12,15 +12,19 @@ export default function({json, api}){
             
             <div className="sideBar">
                 
-                <h2>{json.actions}</h2>
+                <h2 className="sidebarTitle">{json.actions}</h2>
 
                 <OpenSap json={json} api={api}/>
                 
-                <h2>{json.configuration}</h2>
+                <Divider/>
+
+                <h2 className="sidebarTitle">{json.configuration}</h2>
 
                 <Settings json={json} api={api}/>
 
-                <h2>{json.languages}</h2>
+                <Divider/>
+
+                <h2 className="sidebarTitle">{json.languages}</h2>
 
                 <Language></Language>
 

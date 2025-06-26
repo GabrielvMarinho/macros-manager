@@ -37,7 +37,7 @@ import io
 
 MACRO_EXECUTED = "macro_executed"
 MACRO_ERROR = "macro_error"
-
+ROOT_PATH_SHAREPOINT = "Shared%20Documents/Departamento%20PCP/Gerenciador%20de%20Scripts/Macros"
 
 def run_macro_module(sap_window, fileContent, section, file, params=None):
         obj = {"section_parent_folder": section, "parent_folder": file, "sap_window":sap_window}
@@ -84,6 +84,14 @@ class Api:
     #for pairs of who sends and who receives
     pairings = {}
 
+    def get_queue_in_list(self, section_file_objects):
+        filter_set = {(obj["section"], obj["file"]) for obj in section_file_objects}
+
+        list = [
+            q for q in self.processes_queue
+            if (q.get("section"), q.get("file")) in filter_set
+        ]
+        return json.dumps({"queue":list})
     def get_queue(self):
         return json.dumps({"queue":list(self.processes_queue)})
     
@@ -93,7 +101,6 @@ class Api:
 
     def run_next_macro_queue(self):
         macro = self.processes_queue.popleft()
-        
         self.start_macro(macro["section"], macro["file"], macro["fileContent"], macro["params"])
 
         
@@ -138,21 +145,52 @@ class Api:
 
 
     def open_macro_output(self, id):
-        data = get_macro_output(id)
+        data = db_get_macro_output(id)
         data = json.loads(data)
         data = pd.DataFrame(data)
         with tempfile.TemporaryFile(delete=False, suffix=".xlsx") as f:
             data.to_excel(f.name)
             os.startfile(f.name)
+    
+    def get_list_processes_in_list(self, section_file_objects):
 
+        filter_set = {(obj["section"], obj["file"]) for obj in section_file_objects}
+        
+        _json = {}
+        for chave, valor in self.processes.items():
+            if (valor.get("section"), valor.get("file")) in filter_set:
+                _json[chave] = {
+                    "file": valor["file"],
+                    "section": valor["section"]
+                }
+
+        return json.dumps(_json)
+    
     def get_list_processes(self):
         _json = {}
         for chave, valor in self.processes.items():
             _json[chave] = {"file":valor["file"], "section":valor["section"]} 
         return json.dumps(_json)
+    
 
+
+    def get_processes_last_message_in_list(self, section_file_objects):
+        expected_keys = {
+            f"{obj['section']}{obj['file']}" for obj in section_file_objects
+        }
+
+        list = [
+            {k: v}
+            for k, v in self.processes_last_message.items()
+            if k in expected_keys
+        ]
+        return json.dumps(list)
     def get_processes_last_message(self):
         return json.dumps(self.processes_last_message)
+    
+
+
+
  
     def start_macro(self, section, file, fileContent, params=None):
         if(not self.has_free_window()):
@@ -173,10 +211,13 @@ class Api:
         return json.dumps(response)
 
     def stop_macro(self, section, file):
+        self.update_windows_dict(section+file)
         self.processes[f"{section}{file}"]["child"].terminate()
-        del self.processes[section+file]
-        
-        self.update_windows_dict(file+section)
+        try:
+            del self.processes[section+file]
+            del self.processes_last_message[f"{section}{file}"]
+        except Exception as e:
+            pass
         #more than a single place checks for this
         if self.are_there_macros_in_queue():
             self.run_next_macro_queue()
@@ -225,7 +266,7 @@ class Api:
                                     if(data):
                                         data = json.dumps(data)
                              
-                                    add_macro_to_history(urllib.parse.unquote(file), data)
+                                    db_add_macro_to_history(urllib.parse.unquote(file), data)
                                 except:
                                     pass
                                 
@@ -339,7 +380,23 @@ class Api:
         session.findById("wnd[0]/usr/txtRSYST-BNAME").Text = login
         session.findById("wnd[0]/usr/pwdRSYST-BCODE").Text = password
         session.findById("wnd[0]").sendVKey(0)
-    
+    #get the folders in a list
+    def get_folders_in_list(self, list_id):
+        try:
+            res = asyncio.run(db_get_macros_of_list(list_id))
+            res = json.loads(res)
+
+            folder_list = []
+            for macro in res["lists"]:
+                folder_list.append({"section":macro[0], "file":macro[1]})
+            data = {
+                "folders":folder_list
+            }
+            return json.dumps(data)
+        
+        except Exception as e:
+            print(e)
+            pass
     def get_folders(self, path=None):
         cntx = office365_api.get_sharepoint_ctx("BR-WEN-IND-PLANPRODUCAO")
 
@@ -388,10 +445,10 @@ class Api:
 
 
 
-    def get_files(self, path):
+    def get_files(self, section, file):
         cntx = office365_api.get_sharepoint_ctx("BR-WEN-IND-PLANPRODUCAO")
-        
-        file_path = f"Shared%20Documents/Departamento%20PCP/Gerenciador%20de%20Scripts/Macros/{path}"
+        path = urllib.parse.quote(section)+"/"+urllib.parse.quote(file)
+        file_path = f"{ROOT_PATH_SHAREPOINT}/{path}"
 
         root_folder = cntx.web.get_folder_by_server_relative_url(file_path)
 
@@ -400,16 +457,109 @@ class Api:
         files = root_folder.files
 
         data = {}
-        for file in files:
-            if(file.name[-5:]==".json"):
-                data[file.name] = json.loads(file.read().decode("utf-8"))
+        for file_ in files:
+            if(file_.name[-5:]==".json"):
+                data[file_.name] = json.loads(file_.read().decode("utf-8"))
             else:
-                data[file.name] = file.read().decode("utf-8")
+                data[file_.name] = file_.read().decode("utf-8")
         return json.dumps(data)
+    
+
+    def add_macro_to_list(self, list_id, section, file):
+        try:
+            path = urllib.parse.quote(section)+"/"+urllib.parse.quote(file)
+            file_path = f"{ROOT_PATH_SHAREPOINT}/{path}"
+
+            asyncio.run(db_add_macro_to_list(list_id, file_path, section, file))
+            return json.dumps({"status":"success"})
+        except Exception as e:
+            print(e)
+            return json.dumps({"status":"error"})
+    def remove_macro_of_list(seld, list_id, section, file):
+        try:
+
+            path = urllib.parse.quote(section)+"/"+urllib.parse.quote(file)
+            file_path = f"{ROOT_PATH_SHAREPOINT}/{path}"
+
+            asyncio.run(db_remove_macro_of_list(list_id, file_path, section, file))
+            return json.dumps({"status":"success"})
+        except Exception as e:
+            print(e)
+            return json.dumps({"status":"error"})
 
 
+
+
+
+
+    #returns all lists
+    def get_lists(self):
+        try:
+            res = asyncio.run(db_get_lists())
+            res = json.loads(res)
+            list = []
+            
+            for object in res["lists"]:
+                list.append({"id":object[0], "name":object[1]})
+                
+            return json.dumps(list)
+        except Exception as e:
+            print(e)
+            return json.dumps([])
+        
+    #returns a single lists with all macros in it
+    def get_lists_macros(self, list_id):
+        try:
+            res = asyncio.run(db_get_lists())
+            res = json.loads(res)
+            list = []
+            
+            for object in res["lists"]:
+                list.append({"id":object[0], "name":object[1]})
+            return list
+        except:
+            return {}
+        
+    #returns all lists saying if given macro is in it
+    def get_lists_macro(self, section, file):
+        path = urllib.parse.quote(section)+"/"+urllib.parse.quote(file)
+        file_path = f"{ROOT_PATH_SHAREPOINT}/{path}"
+
+        res = asyncio.run(db_get_lists_macro(file_path)) 
+        macro_list_relation = json.loads(res)
+
+        all_lists = json.loads(self.get_lists())
+        
+        for list_ in all_lists:
+            list_["has_this_macro"] = False
+
+        if macro_list_relation["success"]:
+            for register in macro_list_relation["success"]["message"]:
+                result = next(obj for obj in all_lists if obj["id"] == register[0])
+                if(result):
+                    result["has_this_macro"] = True
+            return json.dumps(all_lists)
+        else:
+            print(res["error"]["message"])
+        
+    
+    def create_new_list(self, name):
+        try:
+            asyncio.run(db_create_list(name))
+
+            
+            return json.dumps({
+                "status": "success",
+                "list_name": name
+            })
+
+        except Exception as e:
+            print(e)
+            return json.dumps({
+                "status": "error"
+            })
     def get_history(self):
-        res = get_macros_history()
+        res = asyncio.run(db_get_macros_history())
         res = {"history":res}
         return json.dumps(res)
 
@@ -420,21 +570,12 @@ if __name__ == "__main__":
     api = Api()
     ws_thread = threading.Thread(target=api.run_ws_server, daemon=True)
     ws_thread.start()
-    
+
     # webview.create_window("Gerenciador De Scripts", "frontend-2/build/index.html", js_api=api, confirm_close=True)
     webview.create_window("Gerenciador De Scripts", "localhost:3000", js_api=api, confirm_close=True, maximized=True, min_size=(1450, 850))
 
-    webview.start(debug=True)
-
-
-
-
-
-
-
-    # with open("main1.py") as f:
-    #     exec(f.read())
-
+    asyncio.run(webview.start(debug=True))
+    
     
 
 

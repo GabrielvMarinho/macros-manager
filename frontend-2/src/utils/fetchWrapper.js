@@ -1,7 +1,7 @@
 export default async function fetchWrapper(promise, fallback = null){
     try {
-        const res = await promise;
 
+        const res = await promise;
         if (res.error) {
             console.error("Erro: ", res.error);
             return fallback;
