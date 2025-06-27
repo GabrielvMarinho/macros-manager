@@ -11,13 +11,9 @@
     --color-primary-light: #2383ba81;
     --icon-width:20px;
     --icon-height:20px;
-    --secondary-color: #a4d8e32a;
-    --secondary-color-border: 1px #a4d8e371 solid;
-
-    --tertiary-color: #0091c51f;
-    --tertiary-color-border: 1px #0091c536 solid;
+    
+    --border-container:  1px rgba(5,5,5,0.10) solid;
     --border-radius: 8px;
-
     --body-color:#ffffff1e;
     --line-breaker:#cececeb0;
     --button-sucess-border: 1px hsl(145, 92%, 87%) solid;
@@ -112,13 +108,12 @@ body{
     display: flex;
     width: 100vw;
     justify-content: center;
-    margin-top: 5vh;
-    margin-bottom: 5vh;
+    margin-top: 10vh;
+    margin-bottom: 2vh;
 }
 .dashboardMacroContainer{
-    border: var(--secondary-color-border);
+    border: var(--border-container);
     position: relative;
-    background-color: var(--secondary-color);
     border-radius: var(--border-radius);
     overflow-y: auto;
     height: 50%;
@@ -131,6 +126,7 @@ body{
     gap: 15px;
     padding: 20px;
 }
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px; 
@@ -145,20 +141,29 @@ body{
 ::-webkit-scrollbar-track {
   background: transparent;
 }
-.macroWrapper, .historyWrapper, .macroWrapperLoading, .historyWrapperLoading{
-    background-color: var(--secondary-color);
+.macroWrapper, .macroWrapperNoData, .historyWrapper, .macroWrapperLoading, .historyWrapperLoading{
     border-radius: var(--border-radius);
+    position: relative;
     overflow-y: auto;
-    border: var(--secondary-color-border);
-    height: 60vh;
-    width: 50vw;
+    border: var(--border-container);
+    height: 55vh;
+    width: 60vw;
+}
+.historyWrapper{
+    height: 100%;
+}
+.macroWrapperNoData{
+ 
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .macroWrapperLoading, .historyWrapperLoading{
     overflow: hidden;
 }
 
 .macroContainer, .historyContainer{
-    margin: 50px;
+    margin: 30px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -211,8 +216,7 @@ body{
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--tertiary-color);
-    border: var(--tertiary-color-border);
+    border: var(--border-container);
     padding: 2%;
     width:20%;
     height: 90%;
@@ -229,11 +233,9 @@ body{
 .queueMacros{
     padding: 2%;
     
-    width:20%;
-    background-color: var(--tertiary-color);
-    border: var(--tertiary-color-border);
-    height: 90%;
+    border: var(--border-container);
     display: flex;
+    flex: 1;
     justify-content: center;
     flex-direction: column;
     border-radius: var(--border-radius);
@@ -245,6 +247,12 @@ body{
     margin-bottom: 25px;
     font-weight: 200;
     color: var(--text-dark);
+}
+.ant-menu.ant-menu-root.ant-menu-vertical{
+    border-inline-end: var(--border-container);
+}
+.ant-divider-horizontal{
+    border-block-start:var(--border-container)
 }
 .ant-card-extra{
     display: flex;
@@ -475,7 +483,7 @@ td{
 .mainTableRowHistory{
     position: relative;
     display: flex;
-    border-top: var(--tertiary-color-border);
+    border-top: var(--border-container);
 }
 .mainTableRowHistory:hover{
     background-color: #2383ba1a;

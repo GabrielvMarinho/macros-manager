@@ -7,6 +7,7 @@ import onMessageMacroDashboard from "@/utils/onMessageMacroDashboard";
 import { resolvePromise } from "@/utils/toastPromiseManager";
 import { Link } from "react-router-dom";
 import Arrow from "@/icons/arrow.png"
+import { Empty } from "antd";
 
 export default function({api, json, listId}){
     const [macros, setMacros] = useState()
@@ -16,7 +17,7 @@ export default function({api, json, listId}){
     const [queueMacros, setQueuedMacros] = useState({})
     const [processesLastMessage, setProcessesLastMessage] = useState({})
 
-
+    console.log("listId", listId)
     useEffect(() =>{        
             if (
             api?.get_queue_in_list &&
@@ -70,7 +71,7 @@ export default function({api, json, listId}){
             
             
             }
-        }, [api, queryValue])
+        }, [api, listId, queryValue])
     if(!json){
        return(
         <></>
@@ -84,37 +85,41 @@ export default function({api, json, listId}){
             
             <LoadingMacros/>
             :
-        <div className='macroWrapper'>
-            <div className="macroContainer">
-                {macros.length==0?
-                <h1>no macros found</h1>
+        
+                macros.length==0?
+                <div className="macroWrapperNoData">
+                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No macro in list"></Empty>
+                </div>
                 :
-                macros && macros.map((i) =>{
-                const progresso = progressoMap[i.section+i.file]
+                <div className='macroWrapper'>
+                    <div className="macroContainer">
+                        {macros && macros.map((i) =>{
+                        const progresso = progressoMap[i.section+i.file]
+                    
+                        const queue = Object.values(queueMacros).some(
+                            (value) => value.section + value.file === i.section + i.file
+                        );
+                        
+                        return <MacroBox 
+                        json={json}
+                        executing={executingMap[i.section+i.file]?true:false} 
+                        setExecutingMap={setExecutingMap}
+                        lastMessage={processesLastMessage[i.file]} 
+                        file={i.file} 
+                        section={i.section}
+                        showSection={true}
+                        queued={queue}
+                        progresso={progresso}
+                        queryValueAgain={() =>queryValueAgain(!queryValue)}
+                        startMacro={api.start_macro} 
+                        stopMacro={api.stop_macro}
+                        api={api}></MacroBox>
+                        })}
+                    </div>
+                </div>
+                
+                
             
-                const queue = Object.values(queueMacros).some(
-                    (value) => value.section + value.file === i.section + i.file
-                );
-                
-                return <MacroBox 
-                json={json}
-                executing={executingMap[i.section+i.file]?true:false} 
-                setExecutingMap={setExecutingMap}
-                lastMessage={processesLastMessage[i.file]} 
-                file={i.file} 
-                section={i.section}
-                showSection={true}
-                queued={queue}
-                progresso={progresso}
-                queryValueAgain={() =>queryValueAgain(!queryValue)}
-                startMacro={api.start_macro} 
-                stopMacro={api.stop_macro}
-                api={api}></MacroBox>
-                })
-                }
-                
-            </div>
-        </div>
         
         }
         </div>

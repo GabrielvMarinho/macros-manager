@@ -26,28 +26,27 @@ export default function({api, json}){
 
     return(
     <div className='mainContainer'>  
-        <div>
-            <div className='divTitleBack'>
-                <h1 className='pageTitleBack'>History</h1>
-                </div>
+          
             
                 
                     {!history?
                         <LoadingHistory/>
 
                     :
+                    <div style={{display:"flex", height:"100%", flexDirection:"column"}}>
+                    <h1 className='pageTitle'>History</h1>
+
                     <div className='historyWrapper'>
                         <div className='historyContainer'>
                         <HistoryTable api={api} history={history}/>
                         </div>
                     </div>
-
+                    </div>
                     }
                     
                     
                 
         
-        </div>
     </div>
     )
 }

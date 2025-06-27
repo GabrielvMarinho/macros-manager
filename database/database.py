@@ -101,7 +101,12 @@ async def db_add_macro_to_list(list_id, path, section, file):
     cur.execute("INSERT INTO macros_path_to_list(macro_id, list_id) values(?, ?)", (macro_id, list_id))
     con.commit()
     return json.dumps({"success":"macro added"})
-  
+
+async def db_delete_list(list_id):
+    cur.execute("DELETE FROM macros_path_to_list WHERE list_id = ?", (list_id,))
+    cur.execute("DELETE FROM lists WHERE id = ?", (list_id,))
+    con.commit()
+    
 def db_get_id_path(path, section, file):
     try:
         cur.execute(f"SELECT id FROM macros_path WHERE path = ?", (path,))
