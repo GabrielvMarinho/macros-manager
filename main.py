@@ -86,12 +86,12 @@ class Api:
 
     def get_queue_in_list(self, section_file_objects):
         filter_set = {(obj["section"], obj["file"]) for obj in section_file_objects}
-
         list = [
             q for q in self.processes_queue
             if (q.get("section"), q.get("file")) in filter_set
         ]
         return json.dumps({"queue":list})
+    
     def get_queue(self):
         return json.dumps({"queue":list(self.processes_queue)})
     
@@ -108,23 +108,6 @@ class Api:
         if(self.processes_queue):
             return True
         return False
-
-    def kill_all_processes(self):
-        self.clean_windows()
-
-        for chave, valor in self.processes.items():
-
-            valor.terminate()
-            
-        self.processes = {}
-
-        response= {
-            "message":"macros killed"
-        }
-        
-
-        
-        return response
          
     
     def _start_transaction(self, section, file, fileContent, params=None):
@@ -132,15 +115,6 @@ class Api:
         p = multiprocessing.Process(target=run_macro_module, args=(window, fileContent, section, file, params,))
         p.start()
         return p
-    
-    def get_sections(self):
-        sections_path = os.path.join(os.getcwd(), "modelo_default", "macros")
-        sections = os.listdir(sections_path)
-
-        response = {
-            "sections":sections,
-        }
-        return json.dumps(response)
     
 
 
@@ -268,12 +242,7 @@ class Api:
                              
                                     db_add_macro_to_history(urllib.parse.unquote(file), data)
                                 except:
-                                    pass
-                                
-                                
-
-                            
-                            
+                                    pass  
                     else:
                         await websocket.send("Receiver not connected")
         except:
@@ -285,16 +254,6 @@ class Api:
 
     def run_ws_server(self):
         asyncio.run(self.ws_server())
-
-    def clean_windows(self):
-        self.windows = {
-            "0": "null",
-            "1": "null",
-            "2": "null",
-            "3": "null",
-            "4": "null",
-            "5": "null"
-        }
 
     def get_credentials(self):
         path = os.path.join(os.getcwd(), "modelo_default", "sap_login.txt")
@@ -380,6 +339,7 @@ class Api:
         session.findById("wnd[0]/usr/txtRSYST-BNAME").Text = login
         session.findById("wnd[0]/usr/pwdRSYST-BCODE").Text = password
         session.findById("wnd[0]").sendVKey(0)
+
     #get the folders in a list
     def get_folders_in_list(self, list_id):
         try:
@@ -512,19 +472,7 @@ class Api:
             print(e)
             return json.dumps([])
         
-    #returns a single lists with all macros in it
-    def get_lists_macros(self, list_id):
-        try:
-            res = asyncio.run(db_get_lists())
-            res = json.loads(res)
-            list = []
-            
-            for object in res["lists"]:
-                list.append({"id":object[0], "name":object[1]})
-            return list
-        except:
-            return {}
-        
+  
     #returns all lists saying if given macro is in it
     def get_lists_macro(self, section, file):
         path = urllib.parse.quote(section)+"/"+urllib.parse.quote(file)

@@ -31,7 +31,7 @@ export default function AllSections({api, json}) {
         api?.get_queue &&
         api?.get_list_processes &&
         api?.get_processes_last_message &&
-        api?.get_sections
+        api?.get_folders
       ) {
         fetchWrapper(api.get_folders()).then(data =>{
             setSections(data.folders)
