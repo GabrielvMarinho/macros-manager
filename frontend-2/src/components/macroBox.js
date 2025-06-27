@@ -12,7 +12,8 @@ import { clearPromise, getPromise, resolvePromise, setPromise } from "@/utils/to
 import cancelMacroAndUpdate from "@/utils/cancelMacroDashboard";
 import ManageLists from "./ManageLists";
 
-export function MacroBox({ json, showSection=false, lastMessage, section, queued, executing, setExecuting, file, startMacro, stopMacro, progresso, queryValueAgain, api }) {
+export function MacroBox({ json, run, showSection=false, lastMessage, section, queued, executing, setExecuting, file, startMacro, stopMacro, progresso, queryValueAgain, api }) {
+
   const [modal, setModal] = useState(false)
 
   const [columnsObj, setColumnsObj] = useState()
@@ -21,7 +22,11 @@ export function MacroBox({ json, showSection=false, lastMessage, section, queued
   const [inputForm, setInputForms] = useState({})
   
   const [loading, setLoading] = useState(false)
-  
+  useEffect(() =>{
+    if(run){
+      tryStartMacro()
+    }
+  }, [run])
   useEffect(() =>{
     setLoading(false)
   }, [progresso])
@@ -67,10 +72,6 @@ export function MacroBox({ json, showSection=false, lastMessage, section, queued
     
     
   }
-
-
-
-
    
   const startMacroWithInput = () => {
     

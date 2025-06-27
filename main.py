@@ -96,8 +96,22 @@ class Api:
         return json.dumps({"queue":list(self.processes_queue)})
     
     def add_processes_queue(self, fileContent, section, file, params=None):
-        self.processes_queue.append({"section":section, "file":file,"fileContent":fileContent, "params":params})
-        pass
+      
+        for item in self.processes_queue:
+            print(item["section"])
+            print(item["file"])
+            
+            if(item["section"] ==section and item["file"] ==file):
+                print("found")
+
+        already_exists = any(
+            item["section"] == section and
+            item["file"] == file
+            for item in self.processes_queue
+        )
+        print(already_exists)
+        if(not already_exists):
+            self.processes_queue.append({"section":section, "file":file,"fileContent":fileContent, "params":params})
 
     def run_next_macro_queue(self):
         macro = self.processes_queue.popleft()
@@ -167,22 +181,25 @@ class Api:
 
  
     def start_macro(self, section, file, fileContent, params=None):
-        if(not self.has_free_window()):
-            self.add_processes_queue(fileContent, section, file, params)
+        if(not self.processes.get(f"{section}{file}")):
+            if(not self.has_free_window()):
+                self.add_processes_queue(fileContent, section, file, params)
+                response = {
+                "message":"macro_queued",
+                }
+                return json.dumps(response)
+            
+            child = self._start_transaction(section, file, fileContent, params)
+            
+            self.processes[f"{section}{file}"] = {"child":child,"file":file,"section":section}
+
             response = {
-            "message":"macro_queued",
+                "message":"macro_started",
             }
+
             return json.dumps(response)
-
-        child = self._start_transaction(section, file, fileContent, params)
         
-        self.processes[f"{section}{file}"] = {"child":child,"file":file,"section":section}
-
-        response = {
-            "message":"macro_started",
-        }
-
-        return json.dumps(response)
+        
 
     def stop_macro(self, section, file):
         self.update_windows_dict(section+file)

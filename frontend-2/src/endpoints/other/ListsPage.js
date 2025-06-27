@@ -56,7 +56,7 @@ export default function({api, json}){
                 const formatted = (data || []).map(item => ({
                     key: item.id,
                     label: item.name,
-                    icon: <Popconfirm okText="Yes" cancelText="No"title="Delete list" description={`Do you wish to delete ${item.name}?`} onConfirm={() =>deleteList(item.id)}><img className="icon" src={TrashBin}></img></Popconfirm>
+                    icon: <Popconfirm okText="Yes" cancelText="No"title="Delete list" description={`Do you wish to delete ${item.name}?`} onConfirm={() =>deleteList(item.id)}><img className="icon trashBin" src={TrashBin}></img></Popconfirm>
                 }));
                 
                 

@@ -4,10 +4,10 @@ import { MacroBox } from "./macroBox";
 import fetchWrapper from "@/utils/fetchWrapper";
 import { wsManager } from "@/utils/WebSocketManager";
 import onMessageMacroDashboard from "@/utils/onMessageMacroDashboard";
-import { resolvePromise } from "@/utils/toastPromiseManager";
+import { resolvePromise, setPromise } from "@/utils/toastPromiseManager";
 import { Link } from "react-router-dom";
 import Arrow from "@/icons/arrow.png"
-import { Empty } from "antd";
+import { Button, Empty } from "antd";
 
 export default function({api, json, listId}){
     const [macros, setMacros] = useState()
@@ -16,6 +16,16 @@ export default function({api, json, listId}){
     const [progressoMap, setProgressoMap] = useState({})
     const [queueMacros, setQueuedMacros] = useState({})
     const [processesLastMessage, setProcessesLastMessage] = useState({})
+    const [runAllMacrosValue, setRunAllMacrosValue] = useState(false)
+
+
+
+
+
+
+
+
+
 
     useEffect(() =>{        
             if (
@@ -25,7 +35,7 @@ export default function({api, json, listId}){
             api?.get_folders_in_list
             ) {
             fetchWrapper(api.get_folders_in_list(listId)).then(data =>{
-
+                console.log("data", data)
                 setMacros(data?.folders)
                 fetchWrapper(api.get_queue_in_list(data?.folders)).then((dataQueue) => {
                     setQueuedMacros({})
@@ -71,11 +81,19 @@ export default function({api, json, listId}){
             
             }
         }, [api, listId, queryValue])
+    
+    
+    const RunAllMacros = () =>{
+        
+        setRunAllMacrosValue(true)
+    }
+    
     if(!json){
        return(
         <></>
       )
     }
+
     return (
         <div>
     
@@ -91,6 +109,7 @@ export default function({api, json, listId}){
                 </div>
                 :
                 <div className='macroWrapper'>
+                    <Button onClick={() =>RunAllMacros()}>run all</Button>
                     <div className="macroContainer">
                         {macros && macros.map((i) =>{
                         const progresso = progressoMap[i.section+i.file]
@@ -100,20 +119,21 @@ export default function({api, json, listId}){
                         );
                         
                         return <MacroBox 
-                        json={json}
-                        executing={executingMap[i.section+i.file]?true:false} 
-                        setExecutingMap={setExecutingMap}
-                        lastMessage={processesLastMessage[i.file]} 
-                        file={i.file} 
-                        section={i.section}
-                        showSection={true}
-                        queued={queue}
-                        progresso={progresso}
-                        queryValueAgain={() =>queryValueAgain(!queryValue)}
-                        startMacro={api.start_macro} 
-                        stopMacro={api.stop_macro}
-                        api={api}></MacroBox>
-                        })}
+                                run={runAllMacrosValue}
+                                json={json}
+                                executing={executingMap[i.section+i.file]?true:false} 
+                                setExecutingMap={setExecutingMap}
+                                lastMessage={processesLastMessage[i.file]} 
+                                file={i.file} 
+                                section={i.section}
+                                showSection={true}
+                                queued={queue}
+                                progresso={progresso}
+                                queryValueAgain={() =>queryValueAgain(!queryValue)}
+                                startMacro={api.start_macro} 
+                                stopMacro={api.stop_macro}
+                                api={api}></MacroBox>
+                            })}
                     </div>
                 </div>
                 

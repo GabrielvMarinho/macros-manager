@@ -557,3 +557,13 @@ td{
     bottom: 3%;
     left: 3%;
 }
+.trashBin{
+    margin-right: 10px;
+}
+.ant-menu-item{
+    display: flex !important;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
