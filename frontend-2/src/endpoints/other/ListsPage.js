@@ -1,16 +1,16 @@
 import ListEspecificMacros from "@/components/ListEspecificMacros";
 import fetchWrapper from "@/utils/fetchWrapper";
-import { Button, Flex, Form, Input, Menu, Modal } from "antd";
+import { Button, Empty, Flex, Form, Input, Menu, Modal, Popconfirm } from "antd";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
+import TrashBin from "@/icons/trash-bin.png"
 export default function({api, json}){
     const [lists, setLists] = useState()
     const [listId, setListId] = useState()
     const [modalAddList, setModalAddList] = useState(false)
     const [name, setName] = useState()
     const [nameError, setNameError] = useState()
-
+    const [queryValueAgain, setQueryValueAgain] = useState(false)
     const _setName = (name) =>{
         setName(name)
         setNameError("")
@@ -25,12 +25,28 @@ export default function({api, json}){
             setListId(e.key)
         }
     }
+    const deleteList = async (id) =>{
+        var res = await fetchWrapper(api.delete_list(id))
+        if(res.status == "success"){
+            toast.success("List deleted")
+            setQueryValueAgain(!queryValueAgain)
+        }else{
+            toast.error("Error deleting list")
+            setQueryValueAgain(!queryValueAgain)
+        }
+    }
     const createList = async () =>{
         let res = await fetchWrapper(api.create_new_list(name))
         if(res["status"] == "success"){
             toast.success("list created")
+            
+            setQueryValueAgain(!queryValueAgain)
+            setModalAddList(false)
         }else{
             toast.error("error creating list")
+            setQueryValueAgain(!queryValueAgain)
+            setModalAddList(false)
+
         }
     }
     useEffect(() =>{
@@ -38,7 +54,8 @@ export default function({api, json}){
             fetchWrapper(api.get_lists()).then(data => {
                 const formatted = (data || []).map(item => ({
                     key: item.id,
-                    label: item.name
+                    label: item.name,
+                    icon: <Popconfirm okText="Yes" cancelText="No"title="Delete list" description={`Do you wish to delete ${item.name}?`} onConfirm={() =>deleteList(item.id)}><img className="icon" src={TrashBin}></img></Popconfirm>
                 }));
                 
                 
@@ -46,10 +63,51 @@ export default function({api, json}){
             });
             
         }
-    }, [api])
+    }, [api, queryValueAgain])
 
     return(
+        <>
+
         <div className='mainContainer'>  
+            
+
+            <div style={{display:"flex", flexDirection:"row", gap:"20px", alignItems:"center", maxHeight:"100%"}}>
+
+                <div style={{display:"flex", flexDirection:"column", gap:"20px"}}>
+                    
+                    <Button onClick={() =>setModalAddList(true)}size="large">Create List</Button>
+                    <div style={{overflow:"scroll", height:"50vh"}}>
+                    {lists && lists.length > 0 ? 
+                    
+                        <Menu
+                            onClick={(e) => setListIdFunction(e)}
+                            items={lists}
+                            
+                        />
+                        : null
+                    }
+                    </div>
+                </div>
+
+                {listId ? 
+                    <>
+                        <ListEspecificMacros api={api} json={json} listId={listId}></ListEspecificMacros>
+                    </>
+                :
+                <>
+
+                <div className="macroWrapperNoData">
+                    <Empty description="No List Selected"></Empty>
+                </div>
+                </>
+                }
+            </div>
+            <div className="listContainer">
+                
+            </div>
+
+
+
             <Modal footer={null} width="400px" title={"Type the new List's name"} open={modalAddList} onCancel={() =>setModalAddList(false)}>
                 <Form style={{marginTop:"25px"}}>
                     <Form.Item help={nameError?nameError:""} validateStatus={nameError?"error":""} label="name">
@@ -66,27 +124,7 @@ export default function({api, json}){
                 </Form>
                 
             </Modal>
-            <div style={{display:"flex", flexDirection:"column", gap:"20px"}}>
-                <Button onClick={() =>setModalAddList(true)}size="large">Create List</Button>
-                {lists && lists.length > 0 ? 
-                    <Menu
-                        onClick={(e) => setListIdFunction(e)}
-                        items={listId ? lists.filter(item => item.key === listId) : lists}
-                    />
-                    : null
-                    }
-                    {listId && (
-                        <Button onClick={() => setListId(null)}>Show All Lists</Button>
-                        )}
-                {listId ? 
-                    <ListEspecificMacros api={api} json={json} listId={listId}></ListEspecificMacros>
-                :
-                <h1>not selected</h1>
-                }
-            </div>
-            <div className="listContainer">
-                
-            </div>
         </div>
+        </>
     )
 }

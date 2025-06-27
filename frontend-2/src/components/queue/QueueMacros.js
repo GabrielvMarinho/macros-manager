@@ -1,6 +1,7 @@
 import fetchWrapper from "@/utils/fetchWrapper"
 import { useEffect, useState } from "react"
 import QueueMacro from "./QueueMacro"
+import { Empty } from "antd"
 
 export default function({json, queueMacros}){
     
@@ -16,7 +17,7 @@ export default function({json, queueMacros}){
 
                 ))
                 :
-                <h1>No queue</h1>
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No queue"></Empty>
                 )
             :
                 <h1>loading</h1>

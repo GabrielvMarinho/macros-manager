@@ -17,7 +17,7 @@ export default function({api, section, file}){
         if(e.target.checked){
             res = await fetchWrapper(api.add_macro_to_list(e.target.id, section, file))
             if(res.status=="success"){
-                toast.success("macro added of list")
+                toast.success("macro added to list")
             }
             else{
                 toast.error("error adding macro")
@@ -38,20 +38,21 @@ export default function({api, section, file}){
     return(
         <>
         <img className="icon" onClick={() =>queryLists()} src={listIcon}/>
-        <Modal width={"250px"} title={"Your Lists"} open={modal} footer={null} onCancel={() =>setModal(false)}>
+        <Modal width={"350px"} title={"Your Lists"} open={modal} footer={null} onCancel={() =>setModal(false)}>
 	   
 	    
-	    
+	    <div style={{display:"flex", flexDirection:"column", gap:"2px", height:"200px", overflow:"scroll"}}>
 	    {lists && lists.length>0?
                 lists.map((list) =>(
                     
-                    <Checkbox id = {list.id} defaultChecked={list.has_this_macro} onChange={updateLists}>{list.name}</Checkbox>
+                    <Checkbox  id = {list.id} defaultChecked={list.has_this_macro} onChange={updateLists}>{list.name}</Checkbox>
                 ))
 
                 
                 :
                 <h1>no lists</h1>
             }
+        </div>
         </Modal>
         </>
     )

@@ -475,7 +475,7 @@ class Api:
         except Exception as e:
             print(e)
             return json.dumps({"status":"error"})
-    def remove_macro_of_list(seld, list_id, section, file):
+    def remove_macro_of_list(self, list_id, section, file):
         try:
 
             path = urllib.parse.quote(section)+"/"+urllib.parse.quote(file)
@@ -487,8 +487,13 @@ class Api:
             print(e)
             return json.dumps({"status":"error"})
 
-
-
+    def delete_list(self, list_id):
+        try:
+            asyncio.run(db_delete_list(list_id))
+            return json.dumps({"status":"success"})
+        except Exception as e:
+            print(e)
+            return json.dumps({"status":"error"})
 
 
 

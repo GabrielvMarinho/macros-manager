@@ -13,6 +13,7 @@ import Arrow from "@/icons/arrow.png"
 import { wsManager } from '@/utils/WebSocketManager';
 import onMessageMacroDashboard from '@/utils/onMessageMacroDashboard';
 import { resolvePromise } from '@/utils/toastPromiseManager';
+import { Empty } from 'antd';
 export default function SectionMacrosPage({api, json}) {
 
   const { section } = useParams();
@@ -95,36 +96,41 @@ export default function SectionMacrosPage({api, json}) {
         
         <LoadingMacros/>
         :
-      <div className='macroWrapper'>
-        <div className="macroContainer">
-            {macros.length==0?
-            <h1>no macros found</h1>
+            macros.length==0?
+            <div className='macroWrapperNoData'>
+
+                <Empty description="No macros Found"></Empty>
+            </div>
             :
-            macros && macros.map((i) =>{
-              const progresso = progressoMap[section+i]
-          
-              const queue = Object.values(queueMacros).some(
-                (value) => value.section + value.file === section + i
-              );
+            <div className='macroWrapper'>
+
+                <div className="macroContainer">
+
+                {macros && macros.map((i) =>{
+                  const progresso = progressoMap[section+i]
               
-              return <MacroBox 
-              json={json}
-              executing={executingMap[section+i]?true:false} 
-              setExecutingMap={setExecutingMap}
-              lastMessage={processesLastMessage[i]} 
-              file={i} 
-              section={section}
-              queued={queue}
-              progresso={progresso}
-              queryValueAgain={() =>queryValueAgain(!queryValue)}
-              startMacro={api.start_macro} 
-              stopMacro={api.stop_macro}
-              api={api}></MacroBox>
-            })
-            }
+                  const queue = Object.values(queueMacros).some(
+                    (value) => value.section + value.file === section + i
+                  );
+                  
+                  return <MacroBox 
+                  json={json}
+                  executing={executingMap[section+i]?true:false} 
+                  setExecutingMap={setExecutingMap}
+                  lastMessage={processesLastMessage[i]} 
+                  file={i} 
+                  section={section}
+                  queued={queue}
+                  progresso={progresso}
+                  queryValueAgain={() =>queryValueAgain(!queryValue)}
+                  startMacro={api.start_macro} 
+                  stopMacro={api.stop_macro}
+                  api={api}></MacroBox>
+                })}
+                  </div>
+          </div>
             
-        </div>
-      </div>
+            
       
       }
         </div>
