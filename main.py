@@ -2,7 +2,6 @@ import win32com.client
 import threading
 import websockets
 import asyncio
-import office_api.office365_api as office365_api
 from datetime import datetime
 from database.database import *
 import json
@@ -10,7 +9,7 @@ import webview
 
 import pandas as pd
 import tempfile
-
+from Office365.Office import Office365 
 from collections import deque
 from collections import Counter
 import os
@@ -37,7 +36,6 @@ import io
 
 MACRO_EXECUTED = "macro_executed"
 MACRO_ERROR = "macro_error"
-ROOT_PATH_SHAREPOINT = "Shared%20Documents/Departamento%20PCP/Gerenciador%20de%20Scripts/Macros"
 
 def run_macro_module(sap_window, fileContent, section, file, params=None):
         obj = {"section_parent_folder": section, "parent_folder": file, "sap_window":sap_window}
@@ -62,6 +60,7 @@ def run_macro_module(sap_window, fileContent, section, file, params=None):
 
 
 class Api:
+    office365 = Office365()
     database = Database()
     #for terminating processes
     processes = {}
@@ -340,7 +339,11 @@ class Api:
         session.findById("wnd[0]/usr/txtRSYST-BNAME").Text = login
         session.findById("wnd[0]/usr/pwdRSYST-BCODE").Text = password
         session.findById("wnd[0]").sendVKey(0)
-
+    def get_folders(self, path=None):
+        return self.office365.get_folders(path=path)
+    
+    def get_files(self, section, file):
+        return self.office365.get_files(section, file)
     #get the folders in a list
     def get_folders_in_list(self, list_id):
         try:
@@ -358,27 +361,7 @@ class Api:
         except Exception as e:
             print(e)
             pass
-    def get_folders(self, path=None):
-        cntx = office365_api.get_sharepoint_ctx("BR-WEN-IND-PLANPRODUCAO")
-
-        folder_path = "Shared%20Documents/Departamento%20PCP/Gerenciador%20de%20Scripts/Macros"
-        if(path != None):
-            folder_path = f"Shared%20Documents/Departamento%20PCP/Gerenciador%20de%20Scripts/Macros/{path}"
-        
-        root_folder = cntx.web.get_folder_by_server_relative_url(folder_path)
-
-        root_folder.expand(["Folders"]).get().execute_query()
-
-        folders = root_folder.folders
-
-        folder_list = []
-
-        for folder in folders:
-            folder_list.append(folder.name)
-        data = {
-            "folders":folder_list
-        }
-        return json.dumps(data)
+    
     
     def has_free_window(self):
         for i in range(6):
@@ -406,30 +389,13 @@ class Api:
 
 
 
-    def get_files(self, section, file):
-        cntx = office365_api.get_sharepoint_ctx("BR-WEN-IND-PLANPRODUCAO")
-        path = urllib.parse.quote(section)+"/"+urllib.parse.quote(file)
-        file_path = f"{ROOT_PATH_SHAREPOINT}/{path}"
-
-        root_folder = cntx.web.get_folder_by_server_relative_url(file_path)
-
-        root_folder.expand(["Files"]).get().execute_query()
-
-        files = root_folder.files
-
-        data = {}
-        for file_ in files:
-            if(file_.name[-5:]==".json"):
-                data[file_.name] = json.loads(file_.read().decode("utf-8"))
-            else:
-                data[file_.name] = file_.read().decode("utf-8")
-        return json.dumps(data)
+    
     
 
     def add_macro_to_list(self, list_id, section, file):
         try:
             path = urllib.parse.quote(section)+"/"+urllib.parse.quote(file)
-            file_path = f"{ROOT_PATH_SHAREPOINT}/{path}"
+            file_path = f"{self.office365.get_root_path()}/{path}"
 
             asyncio.run(self.database.add_macro_to_list(list_id, file_path, section, file))
             return json.dumps({"status":"success"})
@@ -440,7 +406,7 @@ class Api:
         try:
 
             path = urllib.parse.quote(section)+"/"+urllib.parse.quote(file)
-            file_path = f"{ROOT_PATH_SHAREPOINT}/{path}"
+            file_path = f"{self.office365.get_root_path()}/{path}"
 
             asyncio.run(self.database.remove_macro_of_list(list_id, file_path, section, file))
             return json.dumps({"status":"success"})
@@ -477,7 +443,7 @@ class Api:
     #returns all lists saying if given macro is in it
     def get_lists_macro(self, section, file):
         path = urllib.parse.quote(section)+"/"+urllib.parse.quote(file)
-        file_path = f"{ROOT_PATH_SHAREPOINT}/{path}"
+        file_path = f"{self.office365.get_root_path()}/{path}"
 
         res = asyncio.run(self.database.get_lists_macro(file_path)) 
         macro_list_relation = json.loads(res)

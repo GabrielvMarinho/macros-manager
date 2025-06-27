@@ -1,12 +1,12 @@
 **Class to manage database connection and querying**
 
-## attributes
+## ATTRIBUTES
 ### **con**
 the connection to the database sqlite file
 ### **cur**
 cursor of the connection
 
-## methods
+## METHODS
 ### **get_lists_macro(self, path)**
 Return each list + information about a macro in int 
 ### **get_lists(self)**

@@ -1,10 +1,10 @@
 
 **Class that will be referentiated by the frontend**
 
-## attributes
+## ATTRIBUTES
 
 ### **database**
-class responsible for data managing in the datbase 
+class responsible for data managing in the database 
 
 ### **processes**
 Manages all the processes currently happening
@@ -26,7 +26,7 @@ Manages the macros that didn't have a free window to run | follows FIFO\
 Manages the websocket connections\
 **Structure**: object of {section+file:websocket_path}
 
-## methods
+## METHODS
 ### **get_queue(self)**
 Return the queues
 ### **get_queue_in_list(self, section_file_objects)**
