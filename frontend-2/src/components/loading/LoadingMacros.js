@@ -13,6 +13,14 @@ export default function (){
                 <div className="shimmerMacroBox"></div>
                 <div className="shimmerMacroBox"></div>
                 <div className="shimmerMacroBox"></div>
+                <div className="shimmerMacroBox"></div>
+                <div className="shimmerMacroBox"></div>
+                <div className="shimmerMacroBox"></div>
+                <div className="shimmerMacroBox"></div>
+                <div className="shimmerMacroBox"></div>
+                <div className="shimmerMacroBox"></div>
+                <div className="shimmerMacroBox"></div>
+
             </div>
         </div>
     )

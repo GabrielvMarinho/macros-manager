@@ -16,6 +16,16 @@ export default function (){
                     <div className="shimmerHistoryBox"></div>
                     <div className="shimmerHistoryBox"></div>
                     <div className="shimmerHistoryBox"></div>
+                    <div className="shimmerHistoryBox"></div>
+                    <div className="shimmerHistoryBox"></div>
+                    <div className="shimmerHistoryBox"></div>
+                    <div className="shimmerHistoryBox"></div>
+                    <div className="shimmerHistoryBox"></div>
+                    <div className="shimmerHistoryBox"></div>
+                    <div className="shimmerHistoryBox"></div>
+                    <div className="shimmerHistoryBox"></div>
+                    <div className="shimmerHistoryBox"></div>
+
                 </div>
             </div>
         </div>

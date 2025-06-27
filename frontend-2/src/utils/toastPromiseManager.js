@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+
 const promiseStore = new Map();
 
 export function setPromise(section, file, resolver) {
@@ -21,5 +23,8 @@ export function resolvePromise(section, file) {
 
 export function clearPromise(section, file) {
   const key = `${section}/${file}`;
+  console.log(promiseStore.get(key))
+  toast.dismiss(key)
   promiseStore.delete(key);
+
 }

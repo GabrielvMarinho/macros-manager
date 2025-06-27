@@ -8,7 +8,7 @@ import { Form, useResolvedPath } from "react-router-dom";
 import Table_ from "./Table_";
 import { Button, Card, Modal } from "antd";
 import fetchWrapper from "@/utils/fetchWrapper";
-import { getPromise, resolvePromise, setPromise } from "@/utils/toastPromiseManager";
+import { clearPromise, getPromise, resolvePromise, setPromise } from "@/utils/toastPromiseManager";
 import cancelMacroAndUpdate from "@/utils/cancelMacroDashboard";
 import ManageLists from "./ManageLists";
 
@@ -36,6 +36,7 @@ export function MacroBox({ json, showSection=false, lastMessage, section, queued
     })
 
     toast.promise(promise, {
+      id:section+"/"+file,
       loading: json.loading_macro_toast,
       success: json.started_macro_toast,
     })
@@ -113,9 +114,10 @@ export function MacroBox({ json, showSection=false, lastMessage, section, queued
 
             <Modal
             title="Execute macro"
-            closable={true}
+
             open={modal}
-            onCancel={() =>setModal(false)}
+            
+            onCancel={() => {console.log("lesgo"); setLoading(false); clearPromise(section, file); setModal(false)}}
             onOk={() =>startMacroWithInput()}
             size="large"
             width={600}
