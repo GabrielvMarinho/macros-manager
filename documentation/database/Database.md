@@ -1,5 +1,5 @@
-**Database to persist specific data**
+**Class to manage database connection and querying**
 
 ## attributes
-
-### **processes**
+### 
+## methods

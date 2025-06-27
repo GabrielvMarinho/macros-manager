@@ -3,9 +3,13 @@
 
 ## attributes
 
+### **database**
+class responsible for data managing in the datbase 
+
 ### **processes**
 Manages all the processes currently happening
 **Structure**: object of {section+file:subprocess} 
+
 ### **windows**
 Manages all the open windows, each process takes one window\
 **Structure**: windows = {"0": "null","1": "null","2": "null","3": "null","4": "null","5": "null"}

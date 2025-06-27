@@ -62,6 +62,7 @@ def run_macro_module(sap_window, fileContent, section, file, params=None):
 
 
 class Api:
+    database = Database()
     #for terminating processes
     processes = {}
 
@@ -119,7 +120,7 @@ class Api:
 
 
     def open_macro_output(self, id):
-        data = db_get_macro_output(id)
+        data = self.database.get_macro_output(id)
         data = json.loads(data)
         data = pd.DataFrame(data)
         with tempfile.TemporaryFile(delete=False, suffix=".xlsx") as f:
@@ -240,7 +241,7 @@ class Api:
                                     if(data):
                                         data = json.dumps(data)
                              
-                                    db_add_macro_to_history(urllib.parse.unquote(file), data)
+                                    self.database.add_macro_to_history(urllib.parse.unquote(file), data)
                                 except:
                                     pass  
                     else:
@@ -343,7 +344,7 @@ class Api:
     #get the folders in a list
     def get_folders_in_list(self, list_id):
         try:
-            res = asyncio.run(db_get_macros_of_list(list_id))
+            res = asyncio.run(self.database.get_macros_of_list(list_id))
             res = json.loads(res)
 
             folder_list = []
@@ -430,7 +431,7 @@ class Api:
             path = urllib.parse.quote(section)+"/"+urllib.parse.quote(file)
             file_path = f"{ROOT_PATH_SHAREPOINT}/{path}"
 
-            asyncio.run(db_add_macro_to_list(list_id, file_path, section, file))
+            asyncio.run(self.database.add_macro_to_list(list_id, file_path, section, file))
             return json.dumps({"status":"success"})
         except Exception as e:
             print(e)
@@ -441,7 +442,7 @@ class Api:
             path = urllib.parse.quote(section)+"/"+urllib.parse.quote(file)
             file_path = f"{ROOT_PATH_SHAREPOINT}/{path}"
 
-            asyncio.run(db_remove_macro_of_list(list_id, file_path, section, file))
+            asyncio.run(self.database.remove_macro_of_list(list_id, file_path, section, file))
             return json.dumps({"status":"success"})
         except Exception as e:
             print(e)
@@ -449,7 +450,7 @@ class Api:
 
     def delete_list(self, list_id):
         try:
-            asyncio.run(db_delete_list(list_id))
+            asyncio.run(self.database.delete_list(list_id))
             return json.dumps({"status":"success"})
         except Exception as e:
             print(e)
@@ -460,7 +461,7 @@ class Api:
     #returns all lists
     def get_lists(self):
         try:
-            res = asyncio.run(db_get_lists())
+            res = asyncio.run(self.database.get_lists())
             res = json.loads(res)
             list = []
             
@@ -478,7 +479,7 @@ class Api:
         path = urllib.parse.quote(section)+"/"+urllib.parse.quote(file)
         file_path = f"{ROOT_PATH_SHAREPOINT}/{path}"
 
-        res = asyncio.run(db_get_lists_macro(file_path)) 
+        res = asyncio.run(self.database.get_lists_macro(file_path)) 
         macro_list_relation = json.loads(res)
 
         all_lists = json.loads(self.get_lists())
@@ -498,7 +499,7 @@ class Api:
     
     def create_new_list(self, name):
         try:
-            asyncio.run(db_create_list(name))
+            asyncio.run(self.database.create_list(name))
 
             
             return json.dumps({
@@ -512,7 +513,7 @@ class Api:
                 "status": "error"
             })
     def get_history(self):
-        res = asyncio.run(db_get_macros_history())
+        res = asyncio.run(self.database.get_macros_history())
         res = {"history":res}
         return json.dumps(res)
 
