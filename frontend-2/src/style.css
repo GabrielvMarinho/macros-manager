@@ -9,8 +9,8 @@
     --flag-border:4px rgb(221, 221, 221) solid;
     --color-primary: #2382BA;
     --color-primary-light: #2383ba81;
-    --icon-width:20px;
-    --icon-height:20px;
+    --icon-width:16px;
+    --icon-height:16px;
     
     --border-container:  1px rgba(5,5,5,0.10) solid;
     --border-radius: 8px;
@@ -108,9 +108,17 @@ body{
     display: flex;
     width: 100vw;
     justify-content: center;
+    align-items: center;
     margin-top: 10vh;
     margin-bottom: 2vh;
 }
+.ant-tabs-nav-wrap{
+    justify-content: center;
+}
+.ant-tabs{
+    flex-grow: 1;
+}
+
 .dashboardMacroContainer{
     border: var(--border-container);
     position: relative;
@@ -258,7 +266,9 @@ body{
     display: flex;
     align-items: center;
 }
+
 .icon{
+    
     width: var(--icon-width);
     height: var(--icon-height);
 }
@@ -541,7 +551,7 @@ td{
     justify-content: center;
 }
 .disclaimer{
-    font-size: 17px;
+    font-size: 14px;
     color: var(--text-dark);
     position: absolute;
     bottom: 3%;
