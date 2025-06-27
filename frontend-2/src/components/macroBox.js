@@ -137,7 +137,7 @@ export function MacroBox({ json, showSection=false, lastMessage, section, queued
   
   
   return (
-    <Card title={showSection?section+" | "+file:file} extra={<ManageLists api={api} section={section} file={file}/>} className={`macroBox`} id={file}>
+    <Card title={showSection?section+" | "+file:file} extra={<ManageLists updateList={queryValueAgain} api={api} section={section} file={file}/>} className={`macroBox`} id={file}>
 
       {/* <div style={{ display: "flex", gap: "20px", flexDirection: "column" }}>
         <label className="title">{file}</label>

@@ -1,9 +1,9 @@
 import fetchWrapper from "@/utils/fetchWrapper"
-import { Checkbox, Modal } from "antd"
+import { Button, Checkbox, Modal } from "antd"
 import { useState } from "react"
 import { toast } from "sonner"
 
-export default function({api, section, file}){
+export default function({api, updateList, section, file}){
     const [lists, setLists] = useState()
     const [modal, setModal] = useState(false)
     const listIcon = require("@/icons/list.png")
@@ -22,15 +22,18 @@ export default function({api, section, file}){
             else{
                 toast.error("error adding macro")
             }
+            
         }else{
             res = await fetchWrapper(api.remove_macro_of_list(e.target.id, section, file))
             if(res.status=="success"){
                 toast.error("macro removed of list")
+                
             }
             else{
                 toast.error("error removing macro")
             }
         }
+        
 
         
     }
@@ -38,10 +41,23 @@ export default function({api, section, file}){
     return(
         <>
         <img className="icon" onClick={() =>queryLists()} src={listIcon}/>
-        <Modal width={"350px"} title={"Your Lists"} open={modal} footer={null} onCancel={() =>setModal(false)}>
+        <Modal width={"350px"} closable={false} title={"Your Lists"} open={modal} footer={[
+        <Button
+            key="submit"
+            type="primary"
+            onClick={() => {
+            setModal(false);
+            if (updateList) {
+                updateList();
+            }
+            }}
+        >
+            Ok
+        </Button>
+        ]}  onCancel={() =>setModal(false)}>
 	   
 	    
-	    <div style={{display:"flex", flexDirection:"column", gap:"2px", height:"200px", overflow:"scroll"}}>
+	    <div style={{display:"flex", flexDirection:"column", gap:"2px", height:"120px", overflow:"scroll"}}>
 	    {lists && lists.length>0?
                 lists.map((list) =>(
                     

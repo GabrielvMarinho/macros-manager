@@ -17,7 +17,6 @@ export default function({api, json, listId}){
     const [queueMacros, setQueuedMacros] = useState({})
     const [processesLastMessage, setProcessesLastMessage] = useState({})
 
-    console.log("listId", listId)
     useEffect(() =>{        
             if (
             api?.get_queue_in_list &&
