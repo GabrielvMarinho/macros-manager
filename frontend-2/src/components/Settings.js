@@ -30,9 +30,6 @@ export default function({json, api}){
         }
     }, [api])
 
-    // useEffect(() =>{
-        
-    // }, [])
     const updateData = () =>{
 
         api.update_credentials(user, password)
