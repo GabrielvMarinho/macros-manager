@@ -21,5 +21,7 @@
     "actions": "Acciones",
     "configuration": "Configuración",
     "languages": "Idiomas",
-    "dashboard":"Tablero"
+    "dashboard":"Tablero",
+    "theme":"Tema"
+
 }

@@ -19,6 +19,7 @@
     "actions": "Actions",
     "configuration": "Paramètres",
     "languages": "Langues",
-    "dashboard":"Tableau"
+    "dashboard":"Tableau",
+    "theme":"Thème"
 
 }

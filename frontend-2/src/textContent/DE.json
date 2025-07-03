@@ -20,5 +20,6 @@
     "actions": "Aktionen",
     "configuration": "Einstellungen",
     "languages": "Sprachen",
-    "dashboard":"Dashboard"
+    "dashboard":"Dashboard",
+    "theme":"Thema"
 }

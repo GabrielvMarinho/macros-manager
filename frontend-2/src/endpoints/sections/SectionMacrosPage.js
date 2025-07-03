@@ -3,17 +3,12 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import fetchWrapper from '@/utils/fetchWrapper';
 import { MacroBox } from '@/components/macroBox';
-import getApi from '@/utils/api';
-import { Toaster, toast } from 'sonner';
-import { useJson } from '@/components/getLanguageJson';
-import Table_ from '@/components/Table_';
-import Credits from '@/components/Credits';
 import LoadingMacros from '@/components/loading/LoadingMacros';
-import Arrow from "@/icons/arrow.png"
 import { wsManager } from '@/utils/WebSocketManager';
 import onMessageMacroDashboard from '@/utils/onMessageMacroDashboard';
 import { resolvePromise } from '@/utils/toastPromiseManager';
 import { Empty } from 'antd';
+import Arrow from '@/icons/Arrow';
 export default function SectionMacrosPage({api, json}) {
 
   const { section } = useParams();
@@ -87,8 +82,8 @@ export default function SectionMacrosPage({api, json}) {
      <div className='divTitleBack'>
            <h1 className='pageTitleBack'>{section}</h1>
 
-          <Link className="returnArrow" to="/">
-            <img className="icon" src={Arrow}></img>
+          <Link className="returnArrow" to="/" >
+            <Arrow/>
           </Link>
       </div>
       {!macros?

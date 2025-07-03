@@ -1,3 +1,4 @@
+import List from "@/icons/List"
 import fetchWrapper from "@/utils/fetchWrapper"
 import { Button, Checkbox, Modal } from "antd"
 import { useState } from "react"
@@ -6,7 +7,6 @@ import { toast } from "sonner"
 export default function({api, updateList, section, file}){
     const [lists, setLists] = useState()
     const [modal, setModal] = useState(false)
-    const listIcon = require("@/icons/list.png")
     const queryLists = () => {
         fetchWrapper(api.get_lists_macro(section, file)).then(setLists)
         setModal(true)
@@ -40,7 +40,9 @@ export default function({api, updateList, section, file}){
     
     return(
         <>
-        <img className="icon" onClick={() =>queryLists()} src={listIcon}/>
+        <div className="icon" onClick={() =>queryLists()}>
+            <List/>
+        </div>
         <Modal width={"350px"} closable={false} title={"Your Lists"} open={modal} footer={[
         <Button
             key="submit"

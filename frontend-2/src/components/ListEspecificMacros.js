@@ -6,7 +6,6 @@ import { wsManager } from "@/utils/WebSocketManager";
 import onMessageMacroDashboard from "@/utils/onMessageMacroDashboard";
 import { resolvePromise, setPromise } from "@/utils/toastPromiseManager";
 import { Link } from "react-router-dom";
-import Arrow from "@/icons/arrow.png"
 import { Button, Empty } from "antd";
 
 export default function({api, json, listId}){

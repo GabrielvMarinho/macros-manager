@@ -2,37 +2,60 @@ import { Button, Divider, Drawer, theme } from "antd";
 import Language from "./Language";
 import OpenSap from "./OpenSap";
 import Settings from "./Settings";
-import Arrow from "@/icons/arrow.png"
 import { useState } from "react";
 import ChangeTheme from "./ChangeTheme";
+import Setting from "@/icons/Setting";
+import Gamepad from "@/icons/Gamepad";
 export default function({json, api}){
-    const [openDrawer, setOpenDrawer] = useState(false) 
+    const [openDrawerConfig, setOpenDrawerConfig] = useState(false) 
+    const [openDrawerActions, setOpenDrawerActions] = useState(false) 
 
     return(
         <>
-        <button onClick={() =>setOpenDrawer(true)}>open drawer</button>
-            <Drawer open={openDrawer} onClose={() =>setOpenDrawer(false)}>
-                
-                <div className="sideBar">
-                    <ChangeTheme></ChangeTheme>
-                    <h2 className="sidebarTitle">{json.actions}</h2>
+        <div style={{position:"absolute", right: "5%", flexDirection:"column", display:"flex", gap:"10px"}}>
+        <div onClick={() =>setOpenDrawerConfig(true)}>
+            <Setting></Setting>
+        </div>
+        <div onClick={() =>setOpenDrawerActions(true)}>
+            <Gamepad></Gamepad>
+        </div>
+        </div>
+        <Drawer open={openDrawerActions} onClose={() =>setOpenDrawerActions(false)}>
+            
+            <div className="sideBar">
+                <h2 className="sidebarTitle">{json.actions}</h2>
 
-                    <OpenSap json={json} api={api}/>
-                    
-                    <Divider/>
+                <OpenSap json={json} api={api}/>
 
-                    <h2 className="sidebarTitle">{json.configuration}</h2>
 
-                    <Settings json={json} api={api}/>
 
-                    <Divider/>
 
-                    <h2 className="sidebarTitle">{json.languages}</h2>
 
-                    <Language></Language>
 
-                </div>
-            </Drawer>
+            </div>
+        </Drawer>
+
+        <Drawer open={openDrawerConfig} onClose={() =>setOpenDrawerConfig(false)}>
+            
+            <div className="sideBar">
+          
+                <h2 className="sidebarTitle">{json.configuration}</h2>
+
+                <Settings json={json} api={api}/>
+
+                <Divider/>
+                <h2 className="sidebarTitle">{json.theme}</h2>
+
+                <ChangeTheme></ChangeTheme>
+
+                <Divider/>
+
+                <h2 className="sidebarTitle">{json.languages}</h2>
+
+                <Language></Language>
+
+            </div>
+        </Drawer>
         </>
     )
 }

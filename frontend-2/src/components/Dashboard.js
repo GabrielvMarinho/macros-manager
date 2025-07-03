@@ -5,8 +5,8 @@ import getApi from "@/utils/api";
 import fetchWrapper from "@/utils/fetchWrapper";
 import { MacroBox } from "./macroBox";
 import { MacroBoxDashboard } from "./MacroBoxDashboard";
-import Refresh from "@/icons/refresh.png"
 import { Empty } from "antd";
+import Refresh from "@/icons/Refresh";
 
 
 export default function Dashboard({json, api, executingMap, progressoMap, listProcess, processesLastMessage, queryValueAgain}){
@@ -16,7 +16,10 @@ export default function Dashboard({json, api, executingMap, progressoMap, listPr
    <>
     <div style={{display:"flex", gap:"10px"}}>
       <h1 className="pageTitle">{json.dashboard}</h1>
-      <img style={{marginTop:"5px"}} onClick={() =>queryValueAgain()} className="icon" src={Refresh}></img>
+      <div onClick={() =>queryValueAgain()}> 
+        <Refresh></Refresh>
+      </div>
+
     </div>
         <div className="dashboardMacroContainer">
           {Object.entries(listProcess).length >0 ?

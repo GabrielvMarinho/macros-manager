@@ -1,10 +1,4 @@
-import { Link } from 'react-router-dom';
-import { MacroBox } from '@/components/macroBox';
-import { useJson } from '@/components/getLanguageJson';
-import LoadingMacros from '@/components/loading/LoadingMacros';
-import Arrow from "@/icons/arrow.png"
 import { useEffect, useState } from 'react';
-import getApi from '@/utils/api';
 import fetchWrapper from '@/utils/fetchWrapper';
 import LoadingHistory from '@/components/loading/LoadingHistory';
 import HistoryTable from '@/components/HistoryTable';

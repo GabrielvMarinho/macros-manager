@@ -3,7 +3,7 @@ import fetchWrapper from "@/utils/fetchWrapper";
 import { Button, Empty, Flex, Form, Input, Menu, Modal, Popconfirm } from "antd";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import TrashBin from "@/icons/trash-bin.png"
+import Trashbin from "@/icons/Trashbin";
 export default function({api, json}){
     const [lists, setLists] = useState()
     const [listId, setListId] = useState()
@@ -56,7 +56,11 @@ export default function({api, json}){
                 const formatted = (data || []).map(item => ({
                     key: item.id,
                     label: item.name,
-                    icon: <Popconfirm okText="Yes" cancelText="No"title="Delete list" description={`Do you wish to delete ${item.name}?`} onConfirm={() =>deleteList(item.id)}><img className="icon trashBin" src={TrashBin}></img></Popconfirm>
+                    icon: <Popconfirm okText="Yes" cancelText="No"title="Delete list" description={`Do you wish to delete ${item.name}?`} onConfirm={() =>deleteList(item.id)}>
+                        <div className="trashBin">
+                            <Trashbin></Trashbin>
+                        </div>
+                        </Popconfirm>
                 }));
                 
                 
