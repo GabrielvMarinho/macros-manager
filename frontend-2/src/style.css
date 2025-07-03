@@ -5,14 +5,14 @@
 
 :root{
     --text-dark:rgba(0,0,0,0.88);
+    --body-color: #f7f7f71e;
     --table-border: 1px solid #ccc;
     --flag-border:4px rgb(221, 221, 221) solid;
     --color-primary: #2382BA;
     --color-primary-light: #2383ba81;
     --icon-width:16px;
     --icon-height:16px;
-    
-    --border-container:  1px rgba(5,5,5,0.10) solid;
+    --border-container:  1px rgba(5,5,5,0.15) solid;
     --border-radius: 8px;
     --body-color:#ffffff1e;
     --line-breaker:#cececeb0;
@@ -23,7 +23,28 @@
     --button-error-background-color:  hsl(359, 100%, 97%);
     --button-error-color: hsl(360, 100%, 45%);
 }
+[data-theme="dark"] {
+  --text-dark: rgba(255, 255, 255, 0.88);
+  --body-color: #141414;
+  --table-border: 1px solid #444;
+  --flag-border: 4px rgb(85, 85, 85) solid;
+  --color-primary: #2382BA;
+  --color-primary-light: #2383ba33; 
+  --icon-width: 16px;
+  --icon-height: 16px;
 
+  --border-container: 1px rgba(255, 255, 255, 0.15) solid;
+  --border-radius: 8px;
+  --line-breaker: #3a3a3a;
+
+  --button-sucess-border: 1px hsl(145, 40%, 30%) solid;
+  --button-sucess-background-color: hsl(145, 30%, 20%);
+  --button-sucess-color: hsl(140, 100%, 70%);
+
+  --button-error-border: 1px hsl(358, 60%, 40%) solid;
+  --button-error-background-color: hsl(358, 30%, 20%);
+  --button-error-color: hsl(360, 100%, 75%);
+}
 body{
     overflow: hidden;
     background-color:var(--body-color);
@@ -112,7 +133,14 @@ body{
     margin-top: 10vh;
     margin-bottom: 2vh;
 }
+.ant-tabs{
+}
+.ant-tabs-nav{
+    all: unset !important;
+    border-bottom: var(--border-container) !important;
+}
 .ant-tabs-nav-wrap{
+
     justify-content: center;
 }
 .ant-tabs{

@@ -4,6 +4,7 @@ import OpenSap from "./OpenSap";
 import Settings from "./Settings";
 import Arrow from "@/icons/arrow.png"
 import { useState } from "react";
+import ChangeTheme from "./ChangeTheme";
 export default function({json, api}){
     const [openDrawer, setOpenDrawer] = useState(false) 
 
@@ -13,7 +14,7 @@ export default function({json, api}){
             <Drawer open={openDrawer} onClose={() =>setOpenDrawer(false)}>
                 
                 <div className="sideBar">
-                    
+                    <ChangeTheme></ChangeTheme>
                     <h2 className="sidebarTitle">{json.actions}</h2>
 
                     <OpenSap json={json} api={api}/>

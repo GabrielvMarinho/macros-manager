@@ -12,10 +12,12 @@ import MacrosHistoryPage from './endpoints/history/MacrosHistoryPage';
 import fetchWrapper from './utils/fetchWrapper';
 import getApi from './utils/api';
 import ListsPage from './endpoints/other/ListsPage';
+import { useTheme } from './components/ThemeProvider';
 
 export default function(){
     const {json, language, updateLanguage} = useJson()
     const [api, setAapi] = useState(null)
+    const {theme_, setTheme} = useTheme()
     
     useEffect(() => {
         
@@ -39,7 +41,8 @@ export default function(){
         { key: '', label: 'Home'},
         { key: 'history', label: 'History'},
     ];
-
+    console.log("theme", theme_)
+    
     return(
     <>
         
@@ -54,6 +57,7 @@ export default function(){
                     <Toaster richColors/>
                     <ConfigProvider
                         theme={{
+                            algorithm: theme_=="light" ? theme.defaultAlgorithm : theme.darkAlgorithm,
                             token: {
                             colorPrimary:"#2382BA",
                             colorError:"#EA5B5B",
