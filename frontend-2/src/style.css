@@ -4,6 +4,9 @@
 /*não é legal, não é produtivo - fran*/
 
 :root{
+    --sun-yellow: #cab600;
+    --moon-grey: #a8a8a8;
+
     --text-dark:rgba(0,0,0,0.88);
     --body-color: #f7f7f71e;
     --table-border: 1px solid #ccc;
@@ -50,6 +53,15 @@ body{
     margin: 0;
     border: 0;
 }
+
+* {
+  scrollbar-width: none;       
+  -ms-overflow-style: none;    
+}
+*::-webkit-scrollbar {
+  display: none;              
+}
+
 .mainContainer{
     display: flex;
     gap: 4%;
@@ -363,20 +375,47 @@ body{
 }
 
 .flagIcon{
-    width: 30px;
-    height: 30px;
-    margin: 4px;
+    opacity: 0.8;
+    width: 25px;
+    height: 25px;
+    padding: 4px;
     cursor: pointer;
-    opacity: 0.6;
+    transition: 0.3s;
+}
+
+.nonSelectedTheme{
+    opacity: 0.8;
+    padding: 4px;
+    height: 24px;
+    width: 24px;
+}
+.selectedTheme{
+    width: 24px;
+    height: 24px;
+
+    border-radius: 100px;
+    padding: 3px;
+    border: var(--border-container);
+}
+
+.flagIconSelected{
+    width: 25px;
+    height: 25px;
+    padding: 3px;
+    border: var(--border-container);
+
+    border-radius: 100px;
+    cursor: pointer;
     transition: 0.3s;
 }
 .flagIcon:hover{
     opacity: 1;
 }
-.selectedFlag{
-    border-radius: 100px;
-    border: var(--flag-border);
+.flagContainer{
+    display: flex;
+    gap: 10px;
 }
+
 
 .flagContainter{
     display: flex;
@@ -399,9 +438,7 @@ body{
     opacity: 0;
 }
 
-.flagContainer{
-    margin-inline: auto;
-}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);

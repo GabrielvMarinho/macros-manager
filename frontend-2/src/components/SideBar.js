@@ -12,7 +12,7 @@ export default function({json, api}){
 
     return(
         <>
-        <div style={{position:"absolute", right: "5%", flexDirection:"column", display:"flex", gap:"10px"}}>
+        <div style={{position:"absolute", right: "5%", flexDirection:"column", display:"flex", gap:"15px"}}>
         <div onClick={() =>setOpenDrawerConfig(true)}>
             <Setting></Setting>
         </div>

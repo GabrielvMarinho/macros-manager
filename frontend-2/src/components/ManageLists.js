@@ -1,6 +1,6 @@
 import List from "@/icons/List"
 import fetchWrapper from "@/utils/fetchWrapper"
-import { Button, Checkbox, Modal } from "antd"
+import { Button, Checkbox, Empty, Modal } from "antd"
 import { useState } from "react"
 import { toast } from "sonner"
 
@@ -59,7 +59,7 @@ export default function({api, updateList, section, file}){
         ]}  onCancel={() =>setModal(false)}>
 	   
 	    
-	    <div style={{display:"flex", flexDirection:"column", gap:"2px", height:"120px", overflow:"scroll"}}>
+	    <div style={{display:"flex", flexDirection:"column", gap:"2px", height:"130px", overflow:"scroll"}}>
 	    {lists && lists.length>0?
                 lists.map((list) =>(
                     
@@ -68,7 +68,7 @@ export default function({api, updateList, section, file}){
 
                 
                 :
-                <h1>no lists</h1>
+                <Empty description="no lists"></Empty>
             }
         </div>
         </Modal>
