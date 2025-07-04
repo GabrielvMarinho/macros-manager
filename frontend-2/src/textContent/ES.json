@@ -16,10 +16,11 @@
     "hint2_table": "Retroceso: Eliminar celda",
     "hint3_table": "Enter: Nueva celda",
     "start_sap":"Iniciar SAP",
+    "settings":"Configuración",
+
     "configuration_saved": "¡Configuración guardada!",
     "save_changes": "Guardar cambios",
     "actions": "Acciones",
-    "configuration": "Configuración",
     "languages": "Idiomas",
     "dashboard":"Tablero",
     "theme":"Tema",

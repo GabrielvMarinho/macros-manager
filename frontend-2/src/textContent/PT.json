@@ -15,10 +15,11 @@
     "hint2_table":"Backspace: Deletar célula",
     "hint3_table":"Enter: Nova célular",
     "start_sap":"Iniciar SAP",
+    "settings":"Configurações",
+
     "configuration_saved": "Configurações salvas!",
     "save_changes": "Salvar alterações",
     "actions": "Ações",
-    "configuration": "Configurações",
     "languages": "Idiomas",
     "dashboard":"Painel de controle",
     "theme":"Tema",

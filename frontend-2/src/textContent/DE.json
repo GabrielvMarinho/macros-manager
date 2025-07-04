@@ -15,10 +15,11 @@
     "hint2_table": "Rücktaste: Zelle löschen",
     "hint3_table": "Eingabetaste: Neue Zelle",
     "start_sap":"SAP starten",
+    "settings":"Einstellungen",
+
     "configuration_saved": "Einstellungen gespeichert!",
     "save_changes": "Änderungen speichern",
     "actions": "Aktionen",
-    "configuration": "Einstellungen",
     "languages": "Sprachen",
     "dashboard":"Dashboard",
     "theme":"Thema",

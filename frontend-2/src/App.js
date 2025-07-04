@@ -44,11 +44,9 @@ export default function(){
             { key: 'history', label: json.history},
         ];
     }
-    console.log("theme", theme_)
     
     return(
     <>
-            <SideBar json={json} api={api}/>
             <div className='navBar'>
 
                 <Tabs
@@ -69,6 +67,8 @@ export default function(){
                             }
                         }}
                     >   
+                                <SideBar json={json} api={api}/>
+
                         <Routes>
                             <Route path='/' element={<AllSections api={api} json={json}/>}/>
                             <Route path='/history' element={<MacrosHistoryPage api={api} json={json}/>}/>

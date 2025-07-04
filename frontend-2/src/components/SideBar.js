@@ -42,7 +42,7 @@ export default function({json, api}){
             
             <div className="sideBar">
           
-                <h2 className="sidebarTitle">{json.configuration}</h2>
+                <h2 className="sidebarTitle">{json.settings}</h2>
 
                 <Settings json={json} api={api}/>
 

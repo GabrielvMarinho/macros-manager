@@ -14,10 +14,11 @@
     "hint2_table": "Retour arrière: Supprimer la cellule",
     "hint3_table": "Entrée: Nouvelle cellule",
     "start_sap":"Démarrer SAP",
+    "settings":"Paramètres",
+
     "configuration_saved": "Paramètres enregistrés !",
     "save_changes": "Enregistrer les modifications",
     "actions": "Actions",
-    "configuration": "Paramètres",
     "languages": "Langues",
     "dashboard":"Tableau",
     "theme":"Thème",
