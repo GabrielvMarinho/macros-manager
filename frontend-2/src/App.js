@@ -13,6 +13,7 @@ import fetchWrapper from './utils/fetchWrapper';
 import getApi from './utils/api';
 import ListsPage from './endpoints/other/ListsPage';
 import { useTheme } from './components/ThemeProvider';
+import SideBar from './components/SideBar';
 
 export default function(){
     const {json, language, updateLanguage} = useJson()
@@ -45,8 +46,9 @@ export default function(){
     
     return(
     <>
-        
+            <SideBar json={json} api={api}/>
             <div className='navBar'>
+
                 <Tabs
                     size='large'
                     items={items}
@@ -73,6 +75,7 @@ export default function(){
                             <Route path='/*' element={<NotFoundPage/>}/>
                         </Routes>
                     </ConfigProvider>
+            
 
     </>
     )

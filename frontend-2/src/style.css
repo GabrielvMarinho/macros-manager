@@ -194,7 +194,7 @@ body{
     position: relative;
     overflow-y: auto;
     border: var(--border-container);
-    height: 55vh;
+    height: 60vh;
     width: 60vw;
 }
 .historyWrapper{
@@ -565,6 +565,7 @@ td{
 }
 .mainTableRowHistory td, .mainTableRowHistoryHeader th{
     width: 30%;
+    color: var(--text-dark);
     text-wrap: nowrap;
     display: flex;
     justify-content: start;
@@ -575,11 +576,11 @@ td{
 .mainTableRow > td > .dataTitle::after {
     content: "";
   position: absolute;
-  top: 25%; /* centraliza verticalmente (100% - 50%) / 2 */
+  top: 25%; 
   right: 0;
   height: 50%;
-  background-color: var(--line-breaker); /* cor da linha */
-  border-right: 1px solid var(--line-breaker); /* linha entre os itens */
+  background-color: var(--line-breaker); 
+  border-right: 1px solid var(--line-breaker);
 }
 
 .mainTableRow > td:last-child > .dataTitle::after{

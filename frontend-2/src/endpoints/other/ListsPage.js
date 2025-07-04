@@ -43,10 +43,12 @@ export default function({api, json}){
             
             setQueryValueAgain(!queryValueAgain)
             setModalAddList(false)
+            setName("")
+
         }else{
             toast.error("error creating list")
             setQueryValueAgain(!queryValueAgain)
-            setModalAddList(false)
+            setName("")
 
         }
     }

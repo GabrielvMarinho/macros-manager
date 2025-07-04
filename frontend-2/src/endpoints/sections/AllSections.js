@@ -119,7 +119,6 @@ export default function AllSections({api, json}) {
             <Dashboard queryValueAgain={() =>queryValueAgain(!queryValue)} progressoMap={progressoMap} json={json} api={api} executingMap={executingMap} listProcess={listProcess} processesLastMessage={processesLastMessage}/>
         </div>
         
-        <SideBar json={json} api={api}/>
 
         <Credits json={json}/>
             

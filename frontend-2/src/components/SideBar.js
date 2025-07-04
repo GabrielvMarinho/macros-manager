@@ -10,9 +10,12 @@ export default function({json, api}){
     const [openDrawerConfig, setOpenDrawerConfig] = useState(false) 
     const [openDrawerActions, setOpenDrawerActions] = useState(false) 
 
+    if(!json){
+        return <></>
+    }
     return(
         <>
-        <div style={{position:"absolute", right: "5%", flexDirection:"column", display:"flex", gap:"15px"}}>
+        <div style={{position:"absolute", right: "5%", top:"50%", flexDirection:"column", display:"flex", gap:"15px"}}>
         <div onClick={() =>setOpenDrawerConfig(true)}>
             <Setting></Setting>
         </div>

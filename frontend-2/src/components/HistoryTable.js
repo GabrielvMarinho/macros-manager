@@ -47,7 +47,7 @@ export default function ({ history, api }) {
               <td colSpan={3}><strong>{title}</strong></td>
             </tr>
             {items.map((h, i) => (
-              <tr className="mainTableRowHistory"   key={`${title}-${i}`}>
+              <tr className="mainTableRowHistory" key={`${title}-${i}`}>
                 <td>{h["id"]}</td>
                 <td>{h["name"]}</td>
                 <td>{h["time"]}</td>
