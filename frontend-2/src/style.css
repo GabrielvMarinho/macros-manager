@@ -28,7 +28,7 @@
 }
 [data-theme="dark"] {
   --text-dark: rgba(255, 255, 255, 0.88);
-  --body-color: #141414;
+  --body-color: #1b1b1b;
   --table-border: 1px solid #444;
   --flag-border: 4px rgb(85, 85, 85) solid;
   --color-primary: #2382BA;
@@ -234,9 +234,11 @@ body{
 .sectionContainer{
     display: flex;
     flex-direction: row;
-    gap: 10px;
+    gap: 15px;
     flex-wrap: wrap;
-    height: 90px;
+    height: 130px;
+    align-content: flex-start;
+    align-items: center;
     padding: 3px;
     width: 100%;
     overflow: auto;
@@ -355,7 +357,7 @@ body{
 }
 .shimmerSectionBox{
     width: 18%;
-    height: 40%;
+    height: 40px;
 }
 @keyframes shimmer {
     0% {

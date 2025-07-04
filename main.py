@@ -88,16 +88,20 @@ class Api:
     pairings = {}
 
     def get_queue_in_list(self, section_file_objects):
-        filter_set = {(obj["section"], obj["file"]) for obj in section_file_objects}
-        list = [
-            q for q in self.processes_queue
-            if (q.get("section"), q.get("file")) in filter_set
-        ]
-        return json.dumps({"queue":list})
-    
+        try:
+            filter_set = {(obj["section"], obj["file"]) for obj in section_file_objects}
+            _list = [
+                q for q in self.processes_queue
+                if (q.get("section"), q.get("file")) in filter_set
+            ]
+            return json.dumps(_list)
+        except:
+            return json.dumps([])
     def get_queue(self):
-        return json.dumps({"queue":list(self.processes_queue)})
-    
+        try:
+            return json.dumps(self.processes_queue)
+        except:
+            return json.dumps([]) 
     def add_processes_queue(self, fileContent, section, file, params=None):
     
 
@@ -121,7 +125,7 @@ class Api:
          
     
     def _start_transaction(self, section, file, fileContent, params=None):
-        window = self.update_windows_dict(section+file, will_use=True)
+        window = self.__update_windows_dict(section+file, will_use=True)
         p = multiprocessing.Process(target=run_macro_module, args=(window, fileContent, section, file, params,))
         p.start()
         return p
@@ -171,15 +175,17 @@ class Api:
         ]
         return json.dumps(list)
     def get_processes_last_message(self):
-        return json.dumps(self.processes_last_message)
-    
+        try:
+            return json.dumps(self.processes_last_message)
+        except:
+            return json.dumps({})
 
 
 
  
     def start_macro(self, section, file, fileContent, params=None):
-        if(not self.processes.get(f"{section}{file}")):
-            if(not self.has_free_window()):
+        try:
+            if(not self.__has_free_window()):
                 self.add_processes_queue(fileContent, section, file, params)
                 response = {
                 "message":"macro_queued",
@@ -190,53 +196,53 @@ class Api:
             
             self.processes[f"{section}{file}"] = {"child":child,"file":file,"section":section}
 
-            response = {
-                "message":"macro_started",
-            }
 
-            return json.dumps(response)
-        
-        
+            return json.dumps({"status":"success"})
+        except:
+            return json.dumps({"status":"error"})
     
       
 
     def stop_macro(self, section, file):
-        self.update_windows_dict(section+file)
-        self.processes[f"{section}{file}"]["child"].terminate()
         try:
-        
+            self.__update_windows_dict(section+file)
+            self.processes[f"{section}{file}"]["child"].terminate()
+    
             asyncio.run(self.__delete_processes_with_lock(section+file))
-        except Exception as e:
-            pass
-        #more than a single place checks for this
-        if self.are_there_macros_in_queue():
-            self.run_next_macro_queue()
+        
+            #more than a single place checks for this
+            if self.are_there_macros_in_queue():
+                self.run_next_macro_queue()
 
 
-        response = {
-            "message":"Thread Stopped",
-        }
-        return json.dumps(response)
+            response = {
+                "status":"success",
+            }
+            return json.dumps(response)
+        except:
+            response = {
+                "status":"error",
+            }
+            return json.dumps(response)
 
     async def __delete_processes_with_lock(self, client_id):
-
         async with self.processes_lock:
             del self.processes[client_id]
             del self.processes_last_message[client_id]
-    async def handle_connection(self, websocket):
-        
-        
-        path = websocket.request.path
-        params = path.strip("/").split("/")
-
-        role, section, file = params  
-        client_id = section+file
-        client_id = urllib.parse.unquote(client_id)
-
-        if(role == "receiver"):
-            self.pairings[client_id] = websocket 
-
+    #internal methods shouldnt have try catches, this is a internal method but its going to be run by the server, so there isnt a higher level to manage exceptions
+    async def __handle_connection(self, websocket):
         try:
+            path = websocket.request.path
+            params = path.strip("/").split("/")
+
+            role, section, file = params  
+            client_id = section+file
+            client_id = urllib.parse.unquote(client_id)
+
+            if(role == "receiver"):
+                self.pairings[client_id] = websocket 
+
+        
             async for message in websocket:
                 if role == "sender" and client_id in self.pairings:
                 
@@ -247,7 +253,7 @@ class Api:
                     self.processes_last_message[client_id] = msg
 
                     if(msg==MACRO_EXECUTED or msg==MACRO_ERROR):
-                        self.update_windows_dict(client_id, will_use=False)
+                        self.__update_windows_dict(client_id, will_use=False)
 
                         await self.__delete_processes_with_lock(client_id)
                         
@@ -271,130 +277,142 @@ class Api:
         except:
             pass
 
-    async def ws_server(self):
-        await websockets.serve(self.handle_connection, "localhost", 8765)
+    async def __ws_server(self):
+        
+        await websockets.serve(self.__handle_connection, "localhost", 8765)
         await asyncio.Future()            
 
     def run_ws_server(self):
-        asyncio.run(self.ws_server())
-
+        try:
+            asyncio.run(self.__ws_server())
+        except:
+            pass
     def get_credentials(self):
-        path = os.path.join(os.getcwd(), "modelo_default", "sap_login.txt")
+        try:
+            path = os.path.join(os.getcwd(), "modelo_default", "sap_login.txt")
 
-        [login, password] = open(path).read().strip().split(",")
-        return json.dumps({login:password})
-    
+            [login, password] = open(path).read().strip().split(",")
+            return json.dumps({"login":login,"password":password})
+        except:
+            return json.dumps({"login":"","password":""})
     def update_credentials(self, login, password):
-        path = os.path.join(os.getcwd(), "modelo_default", "sap_login.txt")
+        try:
+            path = os.path.join(os.getcwd(), "modelo_default", "sap_login.txt")
 
-        f = open(path, "w")
-        f.write(f"{login},{password}")
-        f.close()
-        pass
+            f = open(path, "w")
+            f.write(f"{login},{password}")
+            f.close()
+        except:
+            pass
 
     def open_sap_web(self, download_dir=None, timeout=100):
         
-        
-        if download_dir is None:
-            download_dir = os.path.join(Path.home(), "Downloads")
-
-        
-
-        driver = webdriver.Edge()
-        driver.get("https://www.myweg.net/irj/portal?NavigationTarget=pcd:portal_content/net.weg.folder.weg/net.weg.folder"
-           ".core/net.weg.folder.roles/net.weg.role.ecc/net.weg.iview.ecc")
-
-        sap_file = None
-        start_time = time.time()
-
-        while time.time() - start_time < timeout:
-            # Encontra o arquivo .sap mais recente
-            sap_files = [
-                os.path.join(download_dir, f) for f in os.listdir(download_dir) if f.endswith(".sap")
-            ]
-            
-            if sap_files:
-                sap_file = max(sap_files, key=os.path.getctime)  # Mais recente por data de criação
-                break
-            time.sleep(1)
-
-        if sap_file is None:
-            raise TimeoutError(f"Tempo limite atingido. Arquivo .sap não encontrado em {download_dir}")
-
-        # Aguarda downloads incompletos (ex: .crdownload, .part)
-        while any(
-            filename.endswith((".sap.crdownload", ".sap.part")) for filename in os.listdir(download_dir)
-        ):
-            time.sleep(1)
-
-        print(f"Arquivo .sap mais recente encontrado: {sap_file}")
-
         try:
-            os.startfile(sap_file)  # Abre o arquivo usando o programa associado
-            driver.close()
-        except FileNotFoundError:
-            print(f"Erro: Arquivo não encontrado: {sap_file}")
-        except Exception as e:
-            print(f"Erro ao abrir o arquivo: {e}")
+            if download_dir is None:
+                download_dir = os.path.join(Path.home(), "Downloads")
+
+            driver = webdriver.Edge()
+            driver.get("https://www.myweg.net/irj/portal?NavigationTarget=pcd:portal_content/net.weg.folder.weg/net.weg.folder"
+            ".core/net.weg.folder.roles/net.weg.role.ecc/net.weg.iview.ecc")
+
+            sap_file = None
+            start_time = time.time()
+
+            while time.time() - start_time < timeout:
+                sap_files = [
+                    os.path.join(download_dir, f) for f in os.listdir(download_dir) if f.endswith(".sap")
+                ]
+                
+                if sap_files:
+                    sap_file = max(sap_files, key=os.path.getctime)  # Mais recente por data de criação
+                    break
+                time.sleep(1)
+
+            if sap_file is None:
+                raise TimeoutError(f"Tempo limite atingido. Arquivo .sap não encontrado em {download_dir}")
+
+            while any(
+                filename.endswith((".sap.crdownload", ".sap.part")) for filename in os.listdir(download_dir)
+            ):
+                time.sleep(1)
+
+            print(f"Arquivo .sap mais recente encontrado: {sap_file}")
+
+            try:
+                os.startfile(sap_file)  # Abre o arquivo usando o programa associado
+                driver.close()
+            except FileNotFoundError:
+                print(f"Erro: Arquivo não encontrado: {sap_file}")
+            except Exception as e:
+                print(f"Erro ao abrir o arquivo: {e}")
+        except:
+            pass
 
     def open_sap(self):
-        path = os.path.join(os.getcwd(), "modelo_default", "sap_login.txt")
+        try:
+            path = os.path.join(os.getcwd(), "modelo_default", "sap_login.txt")
 
-        [login, password] = open(path).read().strip().split(",")
+            [login, password] = open(path).read().strip().split(",")
 
-        if(not login or not password):
-            self.open_sap_web()
-            return
+            if(not login or not password):
+                self.open_sap_web()
+                return
 
-            
-        path = "C:/Program Files (x86)/SAP/FrontEnd/SapGui/saplgpad.exe"
-            
-        subprocess.Popen(path)
+                
+            path = "C:/Program Files (x86)/SAP/FrontEnd/SapGui/saplgpad.exe"
+                
+            subprocess.Popen(path)
 
-        while not pyautogui.getActiveWindowTitle().startswith("SAP Logon"):
-            time.sleep(1)
+            while not pyautogui.getActiveWindowTitle().startswith("SAP Logon"):
+                time.sleep(1)
 
-        sapguiauto = win32com.client.GetObject('SAPGUI')
-        application = sapguiauto.GetScriptingEngine
-        connection = application.OpenConnection("EP0 - ECC Produção", True)
-        session = connection.Children(0)
-        session.findById("wnd[0]").maximize()
-        session.findById("wnd[0]/usr/txtRSYST-BNAME").Text = login
-        session.findById("wnd[0]/usr/pwdRSYST-BCODE").Text = password
-        session.findById("wnd[0]").sendVKey(0)
+            sapguiauto = win32com.client.GetObject('SAPGUI')
+            application = sapguiauto.GetScriptingEngine
+            connection = application.OpenConnection("EP0 - ECC Produção", True)
+            session = connection.Children(0)
+            session.findById("wnd[0]").maximize()
+            session.findById("wnd[0]/usr/txtRSYST-BNAME").Text = login
+            session.findById("wnd[0]/usr/pwdRSYST-BCODE").Text = password
+            session.findById("wnd[0]").sendVKey(0)
+        except:
+            pass
     def get_folders(self, path=None):
-        return self.office365.get_folders(path=path)
-    
+        try:
+            return json.dumps(self.office365.get_folders(path=path))
+        except:
+            return json.dumps([])
+        
     def get_files(self, section, file):
-        return self.office365.get_files(section, file)
-    #get the folders in a list
+        try:
+            return json.dumps(self.office365.get_files(section, file))
+        except:
+            return json.dumps({})
+
     def get_folders_in_list(self, list_id):
         try:
-            res = asyncio.run(self.database.get_macros_of_list(list_id))
-            res = json.loads(res)
+            list = self.database.get_macros_of_list(list_id)
+         
 
             folder_list = []
-            for macro in res["lists"]:
+            for macro in list:
                 folder_list.append({"section":macro[0], "file":macro[1]})
-            data = {
-                "folders":folder_list
-            }
-            return json.dumps(data)
         
-        except Exception as e:
-            print(e)
-            pass
+            return json.dumps(folder_list)
+        
+        except:
+            return json.dumps([])
+
     
     
-    def has_free_window(self):
+    def __has_free_window(self):
         for i in range(6):
             if self.windows.get(str(i)) == "null":
                 return True
         return False
     
-    def update_windows_dict(self, key, will_use=False):
+    def __update_windows_dict(self, key, will_use=False):
         if will_use:
-            return self.get_free_window(key)
+            return self.__get_free_window(key)
         else:
             for k, v in self.windows.items():
                 if v == key:
@@ -402,7 +420,7 @@ class Api:
                     break
             return -1
 
-    def get_free_window(self, key):
+    def __get_free_window(self, key):
         for i in range(6):
             i_str = str(i)
             if self.windows.get(i_str) == "null":
@@ -420,10 +438,9 @@ class Api:
             path = urllib.parse.quote(section)+"/"+urllib.parse.quote(file)
             file_path = f"{self.office365.get_root_path()}/{path}"
 
-            asyncio.run(self.database.add_macro_to_list(list_id, file_path, section, file))
+            self.database.add_macro_to_list(list_id, file_path, section, file)
             return json.dumps({"status":"success"})
-        except Exception as e:
-            print(e)
+        except:
             return json.dumps({"status":"error"})
     def remove_macro_of_list(self, list_id, section, file):
         try:
@@ -431,7 +448,7 @@ class Api:
             path = urllib.parse.quote(section)+"/"+urllib.parse.quote(file)
             file_path = f"{self.office365.get_root_path()}/{path}"
 
-            asyncio.run(self.database.remove_macro_of_list(list_id, file_path, section, file))
+            self.database.remove_macro_of_list(list_id, file_path, section, file)
             return json.dumps({"status":"success"})
         except Exception as e:
             print(e)
@@ -439,7 +456,7 @@ class Api:
 
     def delete_list(self, list_id):
         try:
-            asyncio.run(self.database.delete_list(list_id))
+            self.database.delete_list(list_id)
             return json.dumps({"status":"success"})
         except Exception as e:
             print(e)
@@ -450,63 +467,57 @@ class Api:
     #returns all lists
     def get_lists(self):
         try:
-            res = asyncio.run(self.database.get_lists())
-            res = json.loads(res)
+            lists = self.database.get_lists()
+
             list = []
             
-            for object in res["lists"]:
+            for object in lists:
                 list.append({"id":object[0], "name":object[1]})
                 
             return json.dumps(list)
-        except Exception as e:
-            print(e)
+        except:
             return json.dumps([])
         
   
     #returns all lists saying if given macro is in it
     def get_lists_macro(self, section, file):
-        path = urllib.parse.quote(section)+"/"+urllib.parse.quote(file)
-        file_path = f"{self.office365.get_root_path()}/{path}"
+        try:
+            path = urllib.parse.quote(section)+"/"+urllib.parse.quote(file)
+            file_path = f"{self.office365.get_root_path()}/{path}"
 
-        res = asyncio.run(self.database.get_lists_macro(file_path)) 
-        macro_list_relation = json.loads(res)
+            macro_list_relation = self.database.get_lists_macro(file_path)
 
-        all_lists = json.loads(self.get_lists())
-        
-        for list_ in all_lists:
-            list_["has_this_macro"] = False
+            all_lists = json.loads(self.get_lists())
 
-        if macro_list_relation["success"]:
-            for register in macro_list_relation["success"]["message"]:
+            for list_ in all_lists:
+                print(list_)
+                list_["has_this_macro"] = False
+
+            for register in macro_list_relation:
                 result = next(obj for obj in all_lists if obj["id"] == register[0])
                 if(result):
                     result["has_this_macro"] = True
+            print(all_lists)
             return json.dumps(all_lists)
-        else:
-            print(res["error"]["message"])
-        
+        except Exception as e:
+            print(e)
+            return json.dumps([])
     
     def create_new_list(self, name):
         try:
-            asyncio.run(self.database.create_list(name))
-
-            
-            return json.dumps({
-                "status": "success",
-                "list_name": name
-            })
-
+            self.database.create_list(name)
+            return json.dumps({"status": "success"})
         except Exception as e:
             print(e)
-            return json.dumps({
-                "status": "error"
-            })
+            return json.dumps({"status": "error"})
     def get_history(self):
-        res = asyncio.run(self.database.get_macros_history())
-        res = {"history":res}
-        return json.dumps(res)
-
+        try:
+            history = asyncio.run(self.database.get_macros_history())
+            return json.dumps(history)
+        except:
+            return json.dumps([])
 if __name__ == "__main__":
+
     multiprocessing.freeze_support() 
     multiprocessing.set_start_method("spawn")
 

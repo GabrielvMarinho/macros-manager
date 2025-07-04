@@ -33,10 +33,8 @@ class Office365:
 
         for folder in folders:
             folder_list.append(folder.name)
-        data = {
-            "folders":folder_list
-        }
-        return json.dumps(data)
+        
+        return folder_list
 
     def get_files(self, section, file):
         cntx = self.get_sharepoint_ctx("BR-WEN-IND-PLANPRODUCAO")
@@ -55,6 +53,6 @@ class Office365:
                 data[file_.name] = json.loads(file_.read().decode("utf-8"))
             else:
                 data[file_.name] = file_.read().decode("utf-8")
-        return json.dumps(data)
+        return data
     def get_root_path(self):
         return self.ROOT_PATH_SHAREPOINT

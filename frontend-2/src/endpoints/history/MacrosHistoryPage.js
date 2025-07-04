@@ -10,7 +10,7 @@ export default function({api, json}){
     useEffect(() => {
         if (api?.get_history) {
         fetchWrapper(api.get_history()).then(data =>{
-            setHistory(data.history)
+            setHistory(data)
         })
         
         }

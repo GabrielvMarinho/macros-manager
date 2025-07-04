@@ -53,6 +53,7 @@ export default function({api, json}){
         }
     }
     useEffect(() =>{
+        console.log("query again asdasdasd")
         if(api?.get_lists){
             fetchWrapper(api.get_lists()).then(data => {
                 const formatted = (data || []).map(item => ({

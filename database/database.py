@@ -37,41 +37,36 @@ class Database:
                 FOREIGN KEY (list_id) references lists(id)
             );
         """)
-    async def get_lists_macro(self, path):
-        try:
-            self.cur.execute("""
-                        SELECT 
-                            lists.id,
-                            lists.name,
-                            macros_path.id,
-                            macros_path.path
-                        FROM lists 
-                        INNER JOIN macros_path_to_list
-                            ON macros_path_to_list.list_id = lists.id
-                        INNER JOIN macros_path 
-                            ON macros_path_to_list.macro_id = macros_path.id 
-                        WHERE macros_path.path = (?) 
+    def get_lists_macro(self, path):
+        self.cur.execute("""
+                    SELECT 
+                        lists.id,
+                        lists.name,
+                        macros_path.id,
+                        macros_path.path
+                    FROM lists 
+                    INNER JOIN macros_path_to_list
+                        ON macros_path_to_list.list_id = lists.id
+                    INNER JOIN macros_path 
+                        ON macros_path_to_list.macro_id = macros_path.id 
+                    WHERE macros_path.path = (?) 
 
-                        """, (path,))
-            res = self.cur.fetchall()
-            
-            return json.dumps({"success":{"message":res}})
+                         
 
-        except Exception as e:
-            return json.dumps({"error":{"message":e}})
+                    """, (path,))
+        return self.cur.fetchall() 
         
 
-    async def get_lists(self):
+    def get_lists(self):
         self.cur.execute("""
                         SELECT 
                             lists.id,
                             lists.name
                         FROM lists
                         """)
-        res = self.cur.fetchall()
-        return json.dumps({"lists":res})
+        return self.cur.fetchall()
 
-    async def get_macros_of_list(self, list_id):
+    def get_macros_of_list(self, list_id):
         self.cur.execute("""
                         SELECT 
                             macros_path.section,
@@ -84,28 +79,27 @@ class Database:
                         WHERE lists.id = ?
 
                         """, (list_id,))
-        res = self.cur.fetchall()
-        return json.dumps({"lists":res})
+        return self.cur.fetchall()
         
-    async def create_list(self, name):
+    def create_list(self, name):
         self.cur.execute("INSERT INTO lists(name) values(?)", (name,))
         self.con.commit()
         return json.dumps({"success":"list created"})
 
             
-    async def remove_macro_of_list(self, list_id, path, section, file):
+    def remove_macro_of_list(self, list_id, path, section, file):
         macro_id = self.get_id_path(path, section, file)
         self.cur.execute("DELETE FROM macros_path_to_list WHERE macro_id = ? AND list_id = ?", (macro_id, list_id))
         self.con.commit()
         return json.dumps({"success":"macro added"})
 
-    async def add_macro_to_list(self, list_id, path, section, file):
+    def add_macro_to_list(self, list_id, path, section, file):
         macro_id = self.get_id_path(path, section, file)
         self.cur.execute("INSERT INTO macros_path_to_list(macro_id, list_id) values(?, ?)", (macro_id, list_id))
         self.con.commit()
         return json.dumps({"success":"macro added"})
 
-    async def delete_list(self, list_id):
+    def delete_list(self, list_id):
         self.cur.execute("DELETE FROM macros_path_to_list WHERE list_id = ?", (list_id,))
         self.cur.execute("DELETE FROM lists WHERE id = ?", (list_id,))
         self.con.commit()

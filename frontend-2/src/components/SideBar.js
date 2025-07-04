@@ -16,12 +16,13 @@ export default function({json, api}){
     return(
         <>
         <div style={{position:"absolute", right: "5%", top:"50%", flexDirection:"column", display:"flex", gap:"15px"}}>
-        <div onClick={() =>setOpenDrawerConfig(true)}>
-            <Setting></Setting>
-        </div>
         <div onClick={() =>setOpenDrawerActions(true)}>
             <Gamepad></Gamepad>
         </div>
+        <div onClick={() =>setOpenDrawerConfig(true)}>
+            <Setting></Setting>
+        </div>
+        
         </div>
         <Drawer open={openDrawerActions} onClose={() =>setOpenDrawerActions(false)}>
             

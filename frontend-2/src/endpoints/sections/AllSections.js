@@ -7,7 +7,7 @@ import { useJson } from "@/components/getLanguageJson";
 import Dashboard from "@/components/Dashboard";
 import Credits from "@/components/Credits";
 import SideBar from "@/components/SideBar";
-import { Button, Divider } from "antd";
+import { Button, Divider, Empty } from "antd";
 import LoadingSections from "@/components/loading/LoadingSections";
 import QueueMacros from "@/components/queue/QueueMacros";
 import { wsManager } from "@/utils/WebSocketManager";
@@ -15,7 +15,7 @@ import onMessageMacroDashboard from "@/utils/onMessageMacro";
 import { resolvePromise } from "@/utils/toastPromiseManager";
 
 export default function AllSections({api, json}) {
-  const [sections, setSections] = useState([])
+  const [sections, setSections] = useState()
   const navigate = useNavigate(); 
   const [queryValue, queryValueAgain] = useState(true)
   const [executingMap, setexecutingMap] = useState({})
@@ -33,13 +33,13 @@ export default function AllSections({api, json}) {
         api?.get_folders
       ) {
         fetchWrapper(api.get_folders()).then(data =>{
-            setSections(data.folders)
+            setSections(data)
         })
         fetchWrapper(api.get_queue()).then((data) => {
 
           setQueuedMacros({})
 
-          data.queue.forEach((macro) => {
+          data.forEach((macro) => {
             setQueuedMacros(prev =>({
                 ...prev,
                 [macro.section+macro.file]: {"section":macro.section, "file":macro.file}
@@ -100,9 +100,12 @@ export default function AllSections({api, json}) {
           <div className="containerMainPage">
             <h1 className="pageTitle">{json.section_list}</h1>
 
-            {sections?.length==0? 
+            {!sections? 
             <LoadingSections/>
             :  
+            sections.length==0?
+            <Empty description="No section found"/>
+            :
             <div className="sectionContainer">
                 {sections && sections.map(section =>(
 

@@ -11,7 +11,6 @@ export default function (){
             <div className="shimmerSectionBox"></div>
             <div className="shimmerSectionBox"></div>
             <div className="shimmerSectionBox"></div>
-
         </div>
     )
 }

@@ -19,11 +19,12 @@ export default function({json, api}){
        
         if(api){
             fetchWrapper(api.get_credentials()).then(data =>{
-                const [[key, value]] = Object.entries(data)
-                setUser(key)
-                setPrevUser(key)
-                setPassword(value)
-                setPrevPassword(value)
+                const password = data.password
+                const login = data.login
+                setUser(login)
+                setPrevUser(login)
+                setPassword(password)
+                setPrevPassword(password)
                 
             })
             

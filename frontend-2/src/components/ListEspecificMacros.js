@@ -7,7 +7,7 @@ import onMessageMacroDashboard from "@/utils/onMessageMacro";
 import { resolvePromise, setPromise } from "@/utils/toastPromiseManager";
 import { Button, Empty } from "antd";
 
-export default function({api, json, listId}){
+export default function({api, json, listId, resetList}){
     const [macros, setMacros] = useState()
     const [queryValue, queryValueAgain] = useState(true)
     const [executingMap, setExecutingMap] = useState({})
@@ -33,19 +33,17 @@ export default function({api, json, listId}){
             api?.get_folders_in_list
             ) {
             fetchWrapper(api.get_folders_in_list(listId)).then(data =>{
-                console.log("data", data)
-                setMacros(data?.folders)
-                fetchWrapper(api.get_queue_in_list(data?.folders)).then((dataQueue) => {
+                setMacros(data)
+                fetchWrapper(api.get_queue_in_list(data)).then((dataQueue) => {
                     setQueuedMacros({})
-                    console.log(dataQueue)
-                    dataQueue.queue.forEach((macro) => {
+                    dataQueue.forEach((macro) => {
                     setQueuedMacros(prev =>({
                         ...prev,
                         [macro.section+macro.file]: {"section":macro.section, "file":macro.file}
                         }))
                     });
                 });
-                fetchWrapper(api.get_list_processes_in_list(data?.folders)).then((dataProcess) =>{
+                fetchWrapper(api.get_list_processes_in_list(data)).then((dataProcess) =>{
                     
                     setExecutingMap({})
                     Object.entries(dataProcess).forEach(([key, value]) => {
@@ -72,7 +70,7 @@ export default function({api, json, listId}){
 
                     });
                 });
-                fetchWrapper(api.get_processes_last_message_in_list(data?.folders)).then(setProcessesLastMessage);
+                fetchWrapper(api.get_processes_last_message_in_list(data)).then(setProcessesLastMessage);
 
             })
             
@@ -110,7 +108,6 @@ export default function({api, json, listId}){
                     <div className="macroContainer">
                         {macros && macros.map((i) =>{
                         const progresso = progressoMap[i.section+i.file]
-                    
                         const queue = Object.values(queueMacros).some(
                             (value) => value.section + value.file === i.section + i.file
                         );

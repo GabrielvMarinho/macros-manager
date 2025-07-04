@@ -8,7 +8,7 @@ import { clearPromise, getPromise, resolvePromise, setPromise } from "@/utils/to
 import cancelMacroAndUpdate from "@/utils/cancelMacroDashboard";
 import ManageLists from "./ManageLists";
 
-export function MacroBox({ json, run, showSection=false, lastMessage, section, queued, executing, setExecuting, file, startMacro, stopMacro, progresso, queryValueAgain, api }) {
+export function MacroBox({ json, run, showSection=false, lastMessage, section, queued, executing, setExecuting, file, startMacro, stopMacro, progresso, queryValueAgain, api, resetList}) {
 
   const [modal, setModal] = useState(false)
 
@@ -140,12 +140,9 @@ export function MacroBox({ json, run, showSection=false, lastMessage, section, q
   
   
   return (
-    <Card title={showSection?section+" | "+file:file} extra={<ManageLists updateList={queryValueAgain} api={api} section={section} file={file}/>} className={`macroBox`} id={file}>
+    <Card title={showSection?section+" | "+file:file} extra={<ManageLists  updateList={queryValueAgain} api={api} section={section} file={file}/>} className={`macroBox`} id={file}>
 
-      {/* <div style={{ display: "flex", gap: "20px", flexDirection: "column" }}>
-        <label className="title">{file}</label>
-    
-      </div> */}
+
       {queued ? 
         <label className="title">Macro na fila</label>
           

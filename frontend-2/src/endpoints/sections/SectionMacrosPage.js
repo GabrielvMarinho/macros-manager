@@ -28,11 +28,11 @@ export default function SectionMacrosPage({api, json}) {
           api?.get_folders
         ) {
           fetchWrapper(api.get_folders(encodeURIComponent(section))).then(data =>{
-            setMacros(data?.folders)
+            setMacros(data)
           })
           fetchWrapper(api.get_queue()).then((data) => {
             setQueuedMacros({})
-            data.queue.forEach((macro) => {
+            data.forEach((macro) => {
               setQueuedMacros(prev =>({
                   ...prev,
                   [macro.section+macro.file]: {"section":macro.section, "file":macro.file}
