@@ -9,7 +9,13 @@ class WebSocketManager{
         this.socketsRef[id] = socket;
         this.listeners[id] = new Set();
         socket.onmessage = (event) =>{
-            this.listeners[id](event)
+            console.log(event)
+            try{
+                this.listeners[id](event)
+            }catch{
+                return
+            }
+            
         }
         socket.onclose = () =>{
             delete this.listeners[id]

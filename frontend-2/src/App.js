@@ -56,7 +56,7 @@ export default function(){
                     onChange={(key) => navigate(`/${key}`)}
                 />
             </div>
-                    <Toaster richColors/>
+                    <Toaster visibleToasts={10} richColors/>
                     <ConfigProvider
                         theme={{
                             algorithm: theme_=="light" ? theme.defaultAlgorithm : theme.darkAlgorithm,

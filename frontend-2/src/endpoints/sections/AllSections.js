@@ -11,8 +11,7 @@ import { Button, Divider } from "antd";
 import LoadingSections from "@/components/loading/LoadingSections";
 import QueueMacros from "@/components/queue/QueueMacros";
 import { wsManager } from "@/utils/WebSocketManager";
-import onMessageMacro from "@/utils/onMessageMacro";
-import onMessageMacroDashboard from "@/utils/onMessageMacroDashboard";
+import onMessageMacroDashboard from "@/utils/onMessageMacro";
 import { resolvePromise } from "@/utils/toastPromiseManager";
 
 export default function AllSections({api, json}) {
@@ -50,7 +49,6 @@ export default function AllSections({api, json}) {
           
         });
         fetchWrapper(api.get_list_processes()).then((data) =>{
-          
           setListProcesses(data)
           Object.entries(data).forEach(([key, value]) => {
 

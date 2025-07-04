@@ -3,9 +3,8 @@ import LoadingMacros from "./loading/LoadingMacros";
 import { MacroBox } from "./macroBox";
 import fetchWrapper from "@/utils/fetchWrapper";
 import { wsManager } from "@/utils/WebSocketManager";
-import onMessageMacroDashboard from "@/utils/onMessageMacroDashboard";
+import onMessageMacroDashboard from "@/utils/onMessageMacro";
 import { resolvePromise, setPromise } from "@/utils/toastPromiseManager";
-import { Link } from "react-router-dom";
 import { Button, Empty } from "antd";
 
 export default function({api, json, listId}){
@@ -15,7 +14,7 @@ export default function({api, json, listId}){
     const [progressoMap, setProgressoMap] = useState({})
     const [queueMacros, setQueuedMacros] = useState({})
     const [processesLastMessage, setProcessesLastMessage] = useState({})
-    const [runAllMacrosValue, setRunAllMacrosValue] = useState(false)
+    const [runAllMacrosValue, setRunAllMacrosValue] = useState(0)
 
 
 
@@ -83,8 +82,7 @@ export default function({api, json, listId}){
     
     
     const RunAllMacros = () =>{
-        
-        setRunAllMacrosValue(true)
+        setRunAllMacrosValue(runAllMacrosValue+1)
     }
     
     if(!json){

@@ -2,41 +2,59 @@ import { useJson } from "@/components/getLanguageJson";
 import { toast } from "sonner";
 
 
-export default function onMessageMacro(event, setLoading, setExecutando, setProgresso, socket, json, actualFileName, resolvePromise, setApi){
+export default function onMessageMacro(event, key, setexecutingMap, setProgressoMap, queryValueAgain, socket, json, file, resolvePromise){
     const msg = event.data;
+    console.log(msg)
     switch (msg){
         case "macro_started":
             resolvePromise()
-            setExecutando(true);
-            //checking setloading because if the macro starts only in the main page it wont have setLoading hook
-            if(setLoading !=null){
-                setLoading(false)
-            }
+            setexecutingMap(prev =>({
+                ...prev,
+                [key]: true
+            }))
+            queryValueAgain()
+
             
         break;
         
         case "macro_executed":
+            toast.success(json.finished_macro_toast + file)
+            setexecutingMap(prev =>({
+                ...prev,
+                [key]: false
+            }))
             
-            toast.success(json.finished_macro_toast + actualFileName)
-            setExecutando(false);
-            setProgresso(null);
+            queryValueAgain()
+            setProgressoMap(prev =>({
+                ...prev,
+                [key]: null
+            }))
+            
+            
+
             socket.close();
 
-            //to trigger the useffect of the dashboard
-            if(setApi){
-                setApi(null)
-            }
+           
         break;
 
         case "macro_error":
-            toast.error(json.error_macro_toast + actualFileName)
-            setExecutando(false)
+            toast.error(json.error_macro_toast + file)
+            setexecutingMap(prev =>({
+                ...prev,
+                [key]: false
+            }))
+
             socket.close();
         break;
+
         default:
+
             const value = parseFloat(msg);
-            if (!isNaN(value) && setProgresso) {
-                setProgresso(value);
+            if (!isNaN(value)) {
+                setProgressoMap(prev =>({
+                    ...prev,
+                    [key]: value
+                }))
             }
         break;
     }

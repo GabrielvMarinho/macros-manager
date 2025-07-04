@@ -1,10 +1,6 @@
-import cancelarMacro from "@/utils/cancelMacro";
-import onMessageMacro from "@/utils/onMessageMacro";
-import { findByLabelText } from "@testing-library/dom";
+
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { useJson } from "./getLanguageJson";
-import { Form, useResolvedPath } from "react-router-dom";
 import Table_ from "./Table_";
 import { Button, Card, Modal } from "antd";
 import fetchWrapper from "@/utils/fetchWrapper";
@@ -22,14 +18,18 @@ export function MacroBox({ json, run, showSection=false, lastMessage, section, q
   const [inputForm, setInputForms] = useState({})
   
   const [loading, setLoading] = useState(false)
+
   useEffect(() =>{
-    if(run){
+    if(run>0){
       tryStartMacro()
     }
   }, [run])
+
   useEffect(() =>{
-    setLoading(false)
-  }, [progresso])
+    if(executing){
+        setLoading(false)
+    }
+  }, [executing])
   
   const tryStartMacro = () =>{
     setLoading(true)
@@ -98,9 +98,9 @@ export function MacroBox({ json, run, showSection=false, lastMessage, section, q
   const __startMacro = async (fileContent, resolvePromise) => {
     const res = await startMacro(section, file, fileContent);
     resolvePromise()
+
     queryValueAgain()
 
-    
   }
   
   if(loading && !queued){

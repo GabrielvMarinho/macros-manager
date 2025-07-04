@@ -1,13 +1,5 @@
-import cancel_macro from "@/utils/cancelMacro";
-import onMessageMacro from "@/utils/onMessageMacro";
-import { findByLabelText } from "@testing-library/dom";
-import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
-import { useJson } from "./getLanguageJson";
 import { Button, Card } from "antd";
-import { getPromise, resolvePromise } from "@/utils/toastPromiseManager";
-import { wsManager } from "@/utils/WebSocketManager";
-import cancelMacroDashboard from "@/utils/cancelMacroDashboard";
+
 import cancelMacroAndUpdate from "@/utils/cancelMacroDashboard";
 import ManageLists from "./ManageLists";
 

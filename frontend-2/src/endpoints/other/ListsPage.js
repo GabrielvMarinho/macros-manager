@@ -83,7 +83,7 @@ export default function({api, json}){
                 <div style={{display:"flex", flexDirection:"column", gap:"20px"}}>
                     
                     <Button onClick={() =>setModalAddList(true)}size="large">Create List</Button>
-                    <div style={{overflow:"scroll", height:"50vh"}}>
+                    <div style={{overflow:"scroll", height:"50vh", width:"15vw"}}>
                     {lists && lists.length > 0 ? 
                     
                         <Menu

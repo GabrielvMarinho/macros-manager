@@ -5,7 +5,7 @@ import fetchWrapper from '@/utils/fetchWrapper';
 import { MacroBox } from '@/components/macroBox';
 import LoadingMacros from '@/components/loading/LoadingMacros';
 import { wsManager } from '@/utils/WebSocketManager';
-import onMessageMacroDashboard from '@/utils/onMessageMacroDashboard';
+import onMessageMacroDashboard from '@/utils/onMessageMacro';
 import { resolvePromise } from '@/utils/toastPromiseManager';
 import { Empty } from 'antd';
 import Arrow from '@/icons/Arrow';

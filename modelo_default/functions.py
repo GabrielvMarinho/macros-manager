@@ -1,6 +1,5 @@
 import websockets
-import os
-import json
+
 
 async def send_update(section, id, message):
     uri = f"ws://localhost:8765/sender/{section}/{id}"

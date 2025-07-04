@@ -55,6 +55,8 @@ Return the processes_last_message where there is a last message with same sectio
 Check for free windows, if free it start the macro with _start_transaction(), otherwise will call add_processes_queue() to add to queue
 ### **has_free_window(self)**
 Checks for free window
+### **__delete_processes_with_lock**
+Delete processes related structures with a lock
 ### **stop_macro(self, section, file)**
 Update windows with update_windows_dict(), terminate the process, delete from the processes attribute. If macros in queue run, the macro in queue. 
 ### **handle_connection(self, websocket)** *(async)*

@@ -189,6 +189,10 @@ body{
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+.ant-menu-title-content{
+    overflow: hidden;
+    flex: 1;
+}
 .macroWrapper, .macroWrapperNoData, .historyWrapper, .macroWrapperLoading, .historyWrapperLoading{
     border-radius: var(--border-radius);
     position: relative;
@@ -308,6 +312,8 @@ body{
 }
 
 .icon{
+    min-width: var(--icon-width);
+    min-height: var(--icon-height);
     width: var(--icon-width);
     height: var(--icon-height);
 }

@@ -63,6 +63,9 @@ class Api:
     office365 = Office365()
     database = Database()
     #for terminating processes
+
+    processes_lock = asyncio.Lock()
+
     processes = {}
 
     #handle windows left
@@ -96,20 +99,13 @@ class Api:
         return json.dumps({"queue":list(self.processes_queue)})
     
     def add_processes_queue(self, fileContent, section, file, params=None):
-      
-        for item in self.processes_queue:
-            print(item["section"])
-            print(item["file"])
-            
-            if(item["section"] ==section and item["file"] ==file):
-                print("found")
+    
 
         already_exists = any(
             item["section"] == section and
             item["file"] == file
             for item in self.processes_queue
         )
-        print(already_exists)
         if(not already_exists):
             self.processes_queue.append({"section":section, "file":file,"fileContent":fileContent, "params":params})
 
@@ -156,6 +152,7 @@ class Api:
     
     def get_list_processes(self):
         _json = {}
+
         for chave, valor in self.processes.items():
             _json[chave] = {"file":valor["file"], "section":valor["section"]} 
         return json.dumps(_json)
@@ -200,13 +197,15 @@ class Api:
             return json.dumps(response)
         
         
+    
+      
 
     def stop_macro(self, section, file):
         self.update_windows_dict(section+file)
         self.processes[f"{section}{file}"]["child"].terminate()
         try:
-            del self.processes[section+file]
-            del self.processes_last_message[f"{section}{file}"]
+        
+            asyncio.run(self.__delete_processes_with_lock(section+file))
         except Exception as e:
             pass
         #more than a single place checks for this
@@ -219,7 +218,14 @@ class Api:
         }
         return json.dumps(response)
 
+    async def __delete_processes_with_lock(self, client_id):
+
+        async with self.processes_lock:
+            del self.processes[client_id]
+            del self.processes_last_message[client_id]
     async def handle_connection(self, websocket):
+        
+        
         path = websocket.request.path
         params = path.strip("/").split("/")
 
@@ -232,36 +238,36 @@ class Api:
 
         try:
             async for message in websocket:
-                if role == "sender":
-                    if client_id in self.pairings:
-                        content = json.loads(message)
+                if role == "sender" and client_id in self.pairings:
+                
+                    content = json.loads(message)
 
-                        msg = content["message"]
+                    msg = content["message"]
+                    
+                    self.processes_last_message[client_id] = msg
+
+                    if(msg==MACRO_EXECUTED or msg==MACRO_ERROR):
+                        self.update_windows_dict(client_id, will_use=False)
+
+                        await self.__delete_processes_with_lock(client_id)
                         
-                        self.processes_last_message[client_id] = msg
-                        await self.pairings[client_id].send(str(msg))
 
-                        if(msg==MACRO_EXECUTED or msg==MACRO_ERROR):
+                        if self.are_there_macros_in_queue():
+                            self.run_next_macro_queue()
 
-                            self.update_windows_dict(client_id, will_use=False)
+                        if(msg==MACRO_EXECUTED):
+                            try:
+                                data = content.get("data")
 
-                            del self.processes_last_message[client_id]
-                            del self.processes[client_id]
-                           
-                            if self.are_there_macros_in_queue():
-                                self.run_next_macro_queue()
-                            if(msg==MACRO_EXECUTED):
-                                try:
-                                    data = content.get("data")
-
-                                    if(data):
-                                        data = json.dumps(data)
-                             
-                                    self.database.add_macro_to_history(urllib.parse.unquote(file), data)
-                                except:
-                                    pass  
-                    else:
-                        await websocket.send("Receiver not connected")
+                                if(data):
+                                    data = json.dumps(data)
+                            
+                                self.database.add_macro_to_history(urllib.parse.unquote(file), data)
+                            except:
+                                pass  
+                    await self.pairings[client_id].send(str(msg))
+                else:
+                    await websocket.send("Receiver not connected")
         except:
             pass
 
