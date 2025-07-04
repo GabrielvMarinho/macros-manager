@@ -102,7 +102,7 @@ export default function({api, json, listId}){
         
                 macros.length==0?
                 <div className="macroWrapperNoData">
-                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No macro in list"></Empty>
+                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={json.no_macro_list}></Empty>
                 </div>
                 :
                 <div className='macroWrapper'>

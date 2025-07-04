@@ -28,11 +28,11 @@ export default function({api, json}){
 
                     :
                     <div style={{display:"flex", height:"100%", flexDirection:"column"}}>
-                    <h1 className='pageTitle'>History</h1>
+                    <h1 className='pageTitle'>{json.history}</h1>
 
                     <div className='historyWrapper'>
                         <div className='historyContainer'>
-                        <HistoryTable api={api} history={history}/>
+                        <HistoryTable json={json} api={api} history={history}/>
                         </div>
                     </div>
                     </div>

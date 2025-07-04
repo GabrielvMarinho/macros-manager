@@ -21,5 +21,24 @@
     "configuration": "Einstellungen",
     "languages": "Sprachen",
     "dashboard":"Dashboard",
-    "theme":"Thema"
+    "theme":"Thema",
+    "no_macro_list": "Keine Makros in der Liste",
+    "no_list": "Keine Liste ausgewählt",
+    "new_list": "Liste erstellen",
+    "queue_of_macros": "Makro-Warteschlange",
+    "no_queue": "Keine Warteschlange",
+    "no_macros_running": "Keine laufenden Makros",
+    "home": "Startseite",
+    "lists": "Listen",
+    "history": "Verlauf",
+    "login": "Benutzername",
+    "password": "Passwort",
+    "executed_today": "Heute ausgeführt",
+    "executed_last_week": "Letzte Woche ausgeführt",
+    "executed_more_one_week": "Vor mehr als einer Woche ausgeführt",
+    "id": "Id",
+    "name": "Name",
+    "conclusion": "Fazit",
+    "load": "Laden"
+
 }

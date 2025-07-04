@@ -36,12 +36,14 @@ export default function(){
     const navigate = useNavigate();
 
     const activeKey = location.pathname.split('/').pop() || '';
-    
-    const items = [
-        { key: 'lists', label: 'Lists'},
-        { key: '', label: 'Home'},
-        { key: 'history', label: 'History'},
-    ];
+    var items
+    if(json){
+        var items = [
+            { key: 'lists', label: json.lists},
+            { key: '', label: json.home},
+            { key: 'history', label: json.history},
+        ];
+    }
     console.log("theme", theme_)
     
     return(

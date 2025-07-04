@@ -43,12 +43,12 @@ export default function({json, api}){
 
             
 
-            <Form.Item label="Login">
+            <Form.Item label={json.login}>
                 <Input type="text" onChange={(e) =>setUser(e.target.value)} value={user}></Input>
             </Form.Item>
             
 
-            <Form.Item label="Password">
+            <Form.Item label={json.password}>
                 <Input type="password" onChange={(e) =>setPassword(e.target.value)} value={password}></Input>
             </Form.Item>
 

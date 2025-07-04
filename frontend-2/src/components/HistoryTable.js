@@ -8,7 +8,7 @@ function getFirstDayOfWeek(date) {
   return firstDay;
 }
 
-export default function ({ history, api }) {
+export default function ({ history, api, json }) {
 
   const today = new Date();
   const dayToday = today.getDate();
@@ -52,7 +52,7 @@ export default function ({ history, api }) {
                 <td>{h["name"]}</td>
                 <td>{h["time"]}</td>
                 {h["has_output"]?
-                  <Button className="buttonVisualizeExcel" onClick={() =>api.open_macro_output(h["id"])}>visualizar</Button>
+                  <Button className="buttonVisualizeExcel" onClick={() =>api.open_macro_output(h["id"])}>{json.load}</Button>
                 :""
                 }
 
@@ -68,15 +68,15 @@ export default function ({ history, api }) {
     <table className="historyTable">
       <thead>
         <tr className="mainTableRowHistoryHeader">
-          <th>Id</th>
-          <th>Nome</th>
-          <th>Conclusão</th>
+          <th>{json.id}</th>
+          <th>{json.name}</th>
+          <th>{json.conclusion}</th>
         </tr>
       </thead>
       <tbody className="bodyHistory">
-        {renderSection("Executados Hoje", executedToday)}
-        {renderSection("Executados Esta Semana", executedThisWeek)}
-        {renderSection("Executados Anteriormente", executedOlder)}
+        {renderSection(json.executed_today, executedToday)}
+        {renderSection(json.executed_last_week, executedThisWeek)}
+        {renderSection(json.executed_more_one_week, executedOlder)}
       </tbody>
     </table>
   );

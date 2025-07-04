@@ -43,7 +43,7 @@ export default function Dashboard({json, api, executingMap, progressoMap, listPr
               );
             })
           :
-          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Macros Running"></Empty>
+          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={json.no_macros_running}></Empty>
 
           } 
     </div>

@@ -93,7 +93,7 @@ export default function AllSections({api, json}) {
     
       <div className='mainContainer'> 
         <div style={{display:"flex", flexDirection:"column", height:"100%", width:"20%"}}> 
-          <h1 className="pageTitle">Queue of Macros</h1>
+          <h1 className="pageTitle">{json.queue_of_macros}</h1>
           <QueueMacros queueMacros={queueMacros} json={json}/>
         </div>
 

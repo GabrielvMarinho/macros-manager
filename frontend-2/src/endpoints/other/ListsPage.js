@@ -82,7 +82,7 @@ export default function({api, json}){
 
                 <div style={{display:"flex", flexDirection:"column", gap:"20px"}}>
                     
-                    <Button onClick={() =>setModalAddList(true)}size="large">Create List</Button>
+                    <Button onClick={() =>setModalAddList(true)}size="large">{json.new_list}</Button>
                     <div style={{overflow:"scroll", height:"50vh", width:"15vw"}}>
                     {lists && lists.length > 0 ? 
                     
@@ -104,7 +104,7 @@ export default function({api, json}){
                 <>
 
                 <div className="macroWrapperNoData">
-                    <Empty description="No List Selected"></Empty>
+                    <Empty description={json.no_list}></Empty>
                 </div>
                 </>
                 }

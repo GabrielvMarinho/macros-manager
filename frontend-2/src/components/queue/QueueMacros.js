@@ -17,7 +17,7 @@ export default function({json, queueMacros}){
 
                 ))
                 :
-                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No queue"></Empty>
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={json.no_queue}></Empty>
                 )
             :
                 <h1>loading</h1>

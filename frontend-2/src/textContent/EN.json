@@ -10,10 +10,9 @@
     "execute_macro":"Execute",
     "clean":"Clean",
     "credits_disclaimer": "For any questions, please contact Gabriel Volles Marinho and Robert Aron Zimmermann.",
-
-  "hint1_table": "Tab: Next cell",
-  "hint2_table": "Backspace: Delete cell",
-  "hint3_table": "Enter: New cell",
+    "hint1_table": "Tab: Next cell",
+    "hint2_table": "Backspace: Delete cell",
+    "hint3_table": "Enter: New cell",
     "start_sap":"Start SAP",
     "configuration_saved":"Settings saved!",
     "save_changes":"Save changes",
@@ -21,7 +20,23 @@
     "configuration":"Configurações",
     "languages":"Languages",
     "dashboard":"Dashboard",
-    "theme":"Theme"
-
-
+    "theme":"Theme",
+    "no_macro_list":"No macro in list",
+    "no_list":"No list selected",
+    "new_list":"Create list",
+    "queue_of_macros":"Queue of macros",
+    "no_queue":"No queue",
+    "no_macros_running":"No Macros Running",
+    "home":"Home",
+    "lists":"Lists",
+    "history":"History",
+    "login":"Login",
+    "password":"Password",
+    "executed_today":"Executed today",
+    "executed_last_week":"Executed last week",
+    "executed_more_one_week":"Executed more than a week ago",
+    "id":"Id",
+    "name":"Name",
+    "conclusion":"Conclusion",
+    "load":"Load"
 }

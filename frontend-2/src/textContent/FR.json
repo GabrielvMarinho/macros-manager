@@ -20,6 +20,25 @@
     "configuration": "Paramètres",
     "languages": "Langues",
     "dashboard":"Tableau",
-    "theme":"Thème"
+    "theme":"Thème",
+    "no_macro_list": "Aucune macro dans la liste",
+    "no_list": "Aucune liste sélectionnée",
+    "new_list": "Créer une liste",
+    "queue_of_macros": "File d'attente des macros",
+    "no_queue": "Aucune file d'attente",
+    "no_macros_running": "Aucune macro en cours d'exécution",
+    "home": "Accueil",
+    "lists": "Listes",
+    "history": "Historique",
+    "login": "Identifiant",
+    "password": "Mot de passe",
+    "executed_today": "Exécuté aujourd'hui",
+    "executed_last_week": "Exécuté la semaine dernière",
+    "executed_more_one_week": "Exécuté il y a plus d'une semaine",
+    "id": "Id",
+    "name": "Nom",
+    "conclusion": "Conclusion",
+    "load": "Charger"
+
 
 }
