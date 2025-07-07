@@ -184,6 +184,7 @@ class Api:
 
  
     def start_macro(self, section, file, fileContent, params=None):
+        sleep(10)
         try:
             if(not self.__has_free_window()):
                 self.add_processes_queue(fileContent, section, file, params)
@@ -512,7 +513,7 @@ class Api:
             return json.dumps({"status": "error"})
     def get_history(self):
         try:
-            history = asyncio.run(self.database.get_macros_history())
+            history = self.database.get_macros_history()
             return json.dumps(history)
         except:
             return json.dumps([])

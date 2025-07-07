@@ -140,7 +140,7 @@ class Database:
         except Exception as e:
             print(e)
 
-    async def get_macros_history(self):
+    def get_macros_history(self):
         try:
             self.cur.execute("SELECT * FROM macros_history")
             rows = self.cur.fetchall()
