@@ -16,7 +16,6 @@ export default function LanguageSelector() {
         FR: france,
         PT: brazil,
     }
-    console.log(language)
 
     return (
         <div className="flagContainer">

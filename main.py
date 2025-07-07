@@ -104,7 +104,7 @@ class Api:
             return json.dumps([])
     def get_queue(self):
         try:
-            return json.dumps(self.processes_queue)
+            return json.dumps(list(self.processes_queue))
         except:
             return json.dumps([]) 
     def add_processes_queue(self, fileContent, section, file, params=None):

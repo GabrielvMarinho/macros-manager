@@ -118,7 +118,7 @@ export function MacroBox({ json, run, showSection=false, lastMessage, section, q
 
             open={modal}
             
-            onCancel={() => {console.log("lesgo"); setLoading(false); clearPromise(section, file); setModal(false)}}
+            onCancel={() => {setLoading(false); clearPromise(section, file); setModal(false)}}
             onOk={() =>startMacroWithInput()}
             size="large"
             width={600}

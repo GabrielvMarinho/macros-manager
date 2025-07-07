@@ -23,7 +23,6 @@ export function resolvePromise(section, file) {
 
 export function clearPromise(section, file) {
   const key = `${section}/${file}`;
-  console.log(promiseStore.get(key))
   toast.dismiss(key)
   promiseStore.delete(key);
 
