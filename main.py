@@ -1,3 +1,4 @@
+import multiprocessing.connection
 import win32com.client
 import threading
 import websockets
@@ -22,7 +23,7 @@ import urllib.parse
 
 from pathlib import Path
 from selenium import webdriver
-
+from dotenv import load_dotenv
 
 #external imports
 import sys
@@ -32,7 +33,6 @@ import os
 import time
 import subprocess
 import pyautogui
-import io
 
 MACRO_EXECUTED = "macro_executed"
 MACRO_ERROR = "macro_error"
@@ -57,9 +57,14 @@ def run_macro_module(sap_window, fileContent, section, file, params=None):
         
 
 
-
+load_dotenv()
 
 class Api:
+    
+    ipc_address = r'\\.\pipe\macro-manager-pipe'
+    
+    ipc_adress_key = os.getenv("pipe_key").encode()
+
     office365 = Office365()
     database = Database()
     #for terminating processes
@@ -184,7 +189,6 @@ class Api:
 
  
     def start_macro(self, section, file, fileContent, params=None):
-        sleep(10)
         try:
             if(not self.__has_free_window()):
                 self.add_processes_queue(fileContent, section, file, params)
@@ -288,6 +292,38 @@ class Api:
             asyncio.run(self.__ws_server())
         except:
             pass
+
+    def start_method_from_ipc(self, section, file, params=None):
+        try:
+            files = json.loads(self.get_files(section, file))
+            self.start_macro(section, file, files["main.py"], params)
+        except:
+            pass
+
+    def ipc_listener(self):
+        try: 
+            
+
+            listener = multiprocessing.connection.Listener(self.ipc_address, authkey=self.ipc_adress_key)
+
+            while True:
+                
+                #waits for a listener to connect
+                conn = listener.accept()
+        
+                request = json.loads(conn.recv())
+                method = request.get("method")
+                args = request.get("args")
+
+                getattr(self, method)(*args)
+
+
+                conn.close()
+                print("Client disconnected.\n")
+        except Exception as e:
+            print("err", e)
+            pass
+
     def get_credentials(self):
         try:
             path = os.path.join(os.getcwd(), "modelo_default", "sap_login.txt")
@@ -523,6 +559,10 @@ if __name__ == "__main__":
     multiprocessing.set_start_method("spawn")
 
     api = Api()
+    
+    ipc_thread = threading.Thread(target=api.ipc_listener, daemon=True)
+    ipc_thread.start()
+
     ws_thread = threading.Thread(target=api.run_ws_server, daemon=True)
     ws_thread.start()
 
