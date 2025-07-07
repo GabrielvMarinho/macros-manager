@@ -55,11 +55,13 @@ export function MacroBox({ json, run, showSection=false, lastMessage, section, q
         setColumnsObj(columns);
         setFileContent(fileContent)
         setDesc(desc);
-
-        if(Object.entries(columns).length ==0){
-          
-          __startMacro(fileContent, resolvePromise)
+        if(columns){
+          if(Object.entries(columns).length ==0){
+            
+            __startMacro(fileContent, resolvePromise)
+          }
         }
+        
         else{
           const initialForm = Object.entries(columns).reduce((acc, [key, value]) => {
             acc[value] = [""];
