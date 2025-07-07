@@ -3,28 +3,28 @@
 
 ## ATTRIBUTES
 
+### **ipc_address**
+address of the named pipe for ipc communication
+### **ipc_adress_key**
+key to access the pipe 
 ### **database**
 class responsible for data managing in the database 
-
 ### **processes**
 Manages all the processes currently happening
 **Structure**: object of {section+file:subprocess} 
-
 ### **windows**
 Manages all the open windows, each process takes one window\
 **Structure**: windows = {"0": "null","1": "null","2": "null","3": "null","4": "null","5": "null"}
-
 ### **processes_last_message**
 Manages the last_message of each macro so the loading bar is not null in case he start the connection between steps\
 **Structure**: object of {section+file:message}
-
 ### **processes_queue**
 Manages the macros that didn't have a free window to run | follows FIFO\
 **Structure**: list of {"section":section, "file":file,"fileContent":fileContent, "params":params}
-
 ### **pairings**
 Manages the websocket connections\
 **Structure**: object of {section+file:websocket_path}
+
 
 ## METHODS
 ### **get_queue(self)**
@@ -67,6 +67,10 @@ example: if a macro stops, checks for the queue and run if something in it
 Defines websocket server in localhost 8765
 ### **run_ws_server(self)**
 Starts websocket server
+### **start_method_from_ipc**
+Starts a macro calling get_files and start_macro
+### **ipc_listener**
+Listener to ipc request
 ### **get_credentials(self)**
 Return the credentials from sap_login.txt
 ### **update_credentials(self, login, password)**
