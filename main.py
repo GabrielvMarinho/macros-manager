@@ -3,37 +3,25 @@ import win32com.client
 import threading
 import websockets
 import asyncio
-from datetime import datetime
 from database.database import *
 import json
 import webview
-
 import pandas as pd
 import tempfile
 from Office365.Office import Office365 
 from collections import deque
-from collections import Counter
 import os
-import json
-from time import sleep
-
 import multiprocessing
-import importlib
 import urllib.parse
-
 from pathlib import Path
 from selenium import webdriver
 from dotenv import load_dotenv
-
 #external imports
 import sys
-from tkinter import messagebox
-import re
-import os
 import time
 import subprocess
 import pyautogui
-
+from cachetools import cached, TTLCache
 MACRO_EXECUTED = "macro_executed"
 MACRO_ERROR = "macro_error"
 
@@ -58,6 +46,11 @@ def run_macro_module(sap_window, fileContent, section, file, params=None):
 
 
 load_dotenv()
+
+
+
+cache = TTLCache(maxsize=100, ttl=300)
+
 
 class Api:
     
@@ -413,6 +406,7 @@ class Api:
             session.findById("wnd[0]").sendVKey(0)
         except:
             pass
+    @cached(cache)
     def get_folders(self, path=None):
         try:
             return json.dumps(self.office365.get_folders(path=path))
