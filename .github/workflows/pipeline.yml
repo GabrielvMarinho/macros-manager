@@ -2,7 +2,7 @@ name: macros-manager-testing
 on:
   push:
     branches: [main]
-  pull_requests:
+  pull_request:
     branches: [main]
 
 
@@ -19,8 +19,12 @@ jobs:
       with:
         node-version: '18'
         
-    steps:
+    - name: frontend-dependency-installing
+      run: |
+        cd frontend
+        npm i
     - name: frontend-testing
-      run: npm i
-      run: npm test
+      run: |
+        cd frontend
+        npm test
     
