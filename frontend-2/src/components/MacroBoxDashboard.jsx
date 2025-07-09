@@ -3,7 +3,7 @@ import { Button, Card } from "antd";
 import cancelMacroAndUpdate from "@/utils/cancelMacroDashboard";
 import ManageLists from "./ManageLists";
 
-export function MacroBoxDashboard({ api, json, lastMessage, section, file, stopMacro, executando, progresso, queryValueAgain }) {
+export function MacroBoxDashboard({ api, json, section, file, stopMacro, executando, progresso, queryValueAgain }) {
 
   
     

@@ -1,11 +1,10 @@
-import { useJson } from "@/components/getLanguageJson";
 import { toast } from "sonner";
 
 
 export default function onMessageMacro(event, key, setexecutingMap, setProgressoMap, queryValueAgain, socket, json, file, resolvePromise){
     const msg = event.data;
     switch (msg){
-        case "macro_started":
+        case "macro_started":{
             resolvePromise()
             setexecutingMap(prev =>({
                 ...prev,
@@ -15,8 +14,9 @@ export default function onMessageMacro(event, key, setexecutingMap, setProgresso
 
             
         break;
+        }
         
-        case "macro_executed":
+        case "macro_executed":{
             toast.success(json.finished_macro_toast + file)
             setexecutingMap(prev =>({
                 ...prev,
@@ -35,8 +35,9 @@ export default function onMessageMacro(event, key, setexecutingMap, setProgresso
 
            
         break;
+        }
 
-        case "macro_error":
+        case "macro_error":{
             toast.error(json.error_macro_toast + file)
             setexecutingMap(prev =>({
                 ...prev,
@@ -45,8 +46,9 @@ export default function onMessageMacro(event, key, setexecutingMap, setProgresso
 
             socket.close();
         break;
+        }
 
-        default:
+        default:{
 
             const value = parseFloat(msg);
             if (!isNaN(value)) {
@@ -56,5 +58,7 @@ export default function onMessageMacro(event, key, setexecutingMap, setProgresso
                 }))
             }
         break;
+        }
+
     }
 }

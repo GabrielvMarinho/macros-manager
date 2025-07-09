@@ -1,7 +1,7 @@
 import List from "@/icons/List"
 import fetchWrapper from "@/utils/fetchWrapper"
 import { Button, Checkbox, Empty, Modal } from "antd"
-import { useEffect, useState } from "react"
+import {  useState } from "react"
 import { toast } from "sonner"
 
 export default function({api, updateList, section, file}){
@@ -13,31 +13,7 @@ export default function({api, updateList, section, file}){
         setModal(true)
     }
   
-    const updateLists = async (e) =>{
-        let res ={}
-        if(e.target.checked){
-            res = await fetchWrapper(api.add_macro_to_list(e.target.id, section, file))
-            if(res.status=="success"){
-                toast.success("macro added to list")
-            }
-            else{
-                toast.error("error adding macro")
-            }
-            
-        }else{
-            res = await fetchWrapper(api.remove_macro_of_list(e.target.id, section, file))
-            if(res.status=="success"){
-                toast.error("macro removed of list")
-                
-            }
-            else{
-                toast.error("error removing macro")
-            }
-        }
-        
-        
-        
-    }
+  
     
     return(
         <>
@@ -62,8 +38,9 @@ export default function({api, updateList, section, file}){
 	    
 	    <div style={{display:"flex", flexDirection:"column", gap:"2px", height:"130px", overflow:"scroll"}}>
 	    {lists && lists.length > 0 ?
-            lists.map((list, idx) => (
+            lists.map((list, ) => (
                 <Checkbox
+                key={list.id}
                 id={list.id}
                 checked={list.has_this_macro}
                 onChange={async (e) => {

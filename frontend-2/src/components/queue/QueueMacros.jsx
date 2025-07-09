@@ -1,5 +1,4 @@
-import fetchWrapper from "@/utils/fetchWrapper"
-import { useEffect, useState } from "react"
+
 import QueueMacro from "./QueueMacro"
 import { Empty } from "antd"
 
@@ -10,9 +9,9 @@ export default function({json, queueMacros}){
             {Object.entries(queueMacros) !={}?
                 (Object.entries(queueMacros).length>0?
 
-                Object.entries(queueMacros).map(([key, value]) =>(
+                Object.entries(queueMacros).map(([, value]) =>(
                     
-                    <QueueMacro json={json} section={value["section"]} file={value["file"]} ></QueueMacro>
+                    <QueueMacro key={value} json={json} section={value["section"]} file={value["file"]} ></QueueMacro>
                     
 
                 ))

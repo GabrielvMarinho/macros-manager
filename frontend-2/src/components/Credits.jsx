@@ -1,4 +1,3 @@
-import { useJson } from "./getLanguageJson"
 
 export default function ({json}){
     return(

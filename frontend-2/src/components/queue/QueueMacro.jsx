@@ -1,7 +1,7 @@
 
 import { Button } from "antd";
 
-export default function({json, section, file}){
+export default function({section, file}){
 
  
    

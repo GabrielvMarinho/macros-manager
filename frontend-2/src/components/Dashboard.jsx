@@ -1,9 +1,4 @@
-import { useParams } from "react-router-dom";
-import { useState } from "react";
-import { useEffect } from "react";
-import getApi from "@/utils/api";
-import fetchWrapper from "@/utils/fetchWrapper";
-import { MacroBox } from "./macroBox";
+
 import { MacroBoxDashboard } from "./MacroBoxDashboard";
 import { Empty } from "antd";
 import Refresh from "@/icons/Refresh";
@@ -30,6 +25,7 @@ export default function Dashboard({json, api, executingMap, progressoMap, listPr
               const progresso = progressoMap[section+file]
               return (
                 <MacroBoxDashboard
+                key={key}
                 api={api}
                 progresso={progresso}
                   json={json}

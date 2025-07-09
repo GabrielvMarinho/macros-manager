@@ -1,19 +1,19 @@
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import Table_ from "./Table_";
 import { Button, Card, Modal } from "antd";
 import fetchWrapper from "@/utils/fetchWrapper";
-import { clearPromise, getPromise, resolvePromise, setPromise } from "@/utils/toastPromiseManager";
+import { clearPromise, resolvePromise, setPromise } from "@/utils/toastPromiseManager";
 import cancelMacroAndUpdate from "@/utils/cancelMacroDashboard";
 import ManageLists from "./ManageLists";
 
-export function MacroBox({ json, run, showSection=false, lastMessage, section, queued, executing, setExecuting, file, startMacro, stopMacro, progresso, queryValueAgain, api, resetList}) {
+export function MacroBox({ json, run, showSection=false, section, queued, executing, file, startMacro, stopMacro, progresso, queryValueAgain, api}) {
 
   const [modal, setModal] = useState(false)
 
   const [columnsObj, setColumnsObj] = useState()
-  const [desc, setDesc] = useState()
+  const [, setDesc] = useState()
   const [fileContent, setFileContent] = useState()
   const [inputForm, setInputForms] = useState({})
   
@@ -36,7 +36,7 @@ export function MacroBox({ json, run, showSection=false, lastMessage, section, q
 
 
     let resolvePromise 
-    const promise = new Promise((resolve, reject) =>{
+    const promise = new Promise((resolve, ) =>{
       resolvePromise = resolve;
     })
 
@@ -63,7 +63,7 @@ export function MacroBox({ json, run, showSection=false, lastMessage, section, q
         }
         
         else{
-          const initialForm = Object.entries(columns).reduce((acc, [key, value]) => {
+          const initialForm = Object.entries(columns).reduce((acc, [, value]) => {
             acc[value] = [""];
             return acc;
           }, {});
@@ -98,7 +98,7 @@ export function MacroBox({ json, run, showSection=false, lastMessage, section, q
   }
 
   const __startMacro = async (fileContent, resolvePromise) => {
-    const res = await startMacro(section, file, fileContent);
+    await startMacro(section, file, fileContent);
     resolvePromise()
 
     queryValueAgain()

@@ -4,10 +4,10 @@ import { MacroBox } from "./macroBox";
 import fetchWrapper from "@/utils/fetchWrapper";
 import { wsManager } from "@/utils/WebSocketManager";
 import onMessageMacroDashboard from "@/utils/onMessageMacro";
-import { resolvePromise, setPromise } from "@/utils/toastPromiseManager";
+import { resolvePromise } from "@/utils/toastPromiseManager";
 import { Button, Empty } from "antd";
 
-export default function({api, json, listId, resetList}){
+export default function({api, json, listId}){
     const [macros, setMacros] = useState()
     const [queryValue, queryValueAgain] = useState(true)
     const [executingMap, setExecutingMap] = useState({})
@@ -113,6 +113,7 @@ export default function({api, json, listId, resetList}){
                         );
                         
                         return <MacroBox 
+                                key={i.section+i.file}
                                 run={runAllMacrosValue}
                                 json={json}
                                 executing={executingMap[i.section+i.file]?true:false} 

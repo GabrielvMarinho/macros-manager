@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import fetchWrapper from '@/utils/fetchWrapper';
@@ -109,6 +109,8 @@ export default function SectionMacrosPage({api, json}) {
                   );
                   
                   return <MacroBox 
+                  key={i}
+
                   json={json}
                   executing={executingMap[section+i]?true:false} 
                   setExecutingMap={setExecutingMap}

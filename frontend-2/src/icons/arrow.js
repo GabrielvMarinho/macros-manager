@@ -1,4 +1,3 @@
-import { useTheme } from "@/components/ThemeProvider"
 import "@/style.css"
 import { useState } from "react"
 

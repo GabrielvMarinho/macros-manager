@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
 import fetchWrapper from "@/utils/fetchWrapper";
 import "@/style.css"
-import getApi from "@/utils/api";
 import { useNavigate } from 'react-router-dom';
-import { useJson } from "@/components/getLanguageJson";
 import Dashboard from "@/components/Dashboard";
 import Credits from "@/components/Credits";
-import SideBar from "@/components/SideBar";
 import { Button, Divider, Empty } from "antd";
 import LoadingSections from "@/components/loading/LoadingSections";
 import QueueMacros from "@/components/queue/QueueMacros";
@@ -109,7 +106,7 @@ export default function AllSections({api, json}) {
             <div className="sectionContainer">
                 {sections && sections.map(section =>(
 
-                      <Button size="large" onClick={() => navigate(`/section/${section}`)}>
+                      <Button key={section} size="large" onClick={() => navigate(`/section/${section}`)}>
                         {section}
                       </Button>
                 ))}

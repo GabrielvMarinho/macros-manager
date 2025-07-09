@@ -1,4 +1,4 @@
-import { Button, Divider, Drawer, theme } from "antd";
+import { Divider, Drawer } from "antd";
 import Language from "./Language";
 import OpenSap from "./OpenSap";
 import Settings from "./Settings";
