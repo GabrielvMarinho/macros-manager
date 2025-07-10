@@ -2,4 +2,4 @@ frontend
 npm run build
 
 backend wrapping frontend too
-pyinstaller --add-data "frontend-2/build:frontend-2/build" --add-data "modelo_default:modelo_default" main.py --noconsole
+pyinstaller --add-data "functions.py:functions.py" --add-data "frontend/build:frontend/build" --add-data "Office365/Office.py:Office365/Office.py" --add-data "database/database.py:database/database.py" --add-data "modelo_default:modelo_default" main.py --noconsole
