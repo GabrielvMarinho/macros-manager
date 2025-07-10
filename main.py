@@ -15,7 +15,6 @@ import multiprocessing
 import urllib.parse
 from pathlib import Path
 from selenium import webdriver
-from dotenv import load_dotenv
 #external imports
 import sys
 import time
@@ -45,7 +44,6 @@ def run_macro_module(sap_window, fileContent, section, file, params=None):
         
 
 
-load_dotenv()
 
 
 
@@ -56,7 +54,7 @@ class Api:
     
     ipc_address = r'\\.\pipe\macro-manager-pipe'
     
-    ipc_adress_key = os.getenv("pipe_key").encode()
+    ipc_adress_key = b"1e0dc389-f3b9-4da4-b429-0906277d7545"
 
     office365 = Office365()
     database = Database()
