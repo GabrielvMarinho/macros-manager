@@ -225,53 +225,63 @@ class Api:
         async with self.processes_lock:
             del self.processes[client_id]
             del self.processes_last_message[client_id]
-    #internal methods shouldnt have try catches, this is a internal method but its going to be run by the server, so there isnt a higher level to manage exceptions
+
+
     async def __handle_connection(self, websocket):
+        print("connection")
         try:
             path = websocket.request.path
             params = path.strip("/").split("/")
+            
 
             role, section, file = params  
             client_id = section+file
             client_id = urllib.parse.unquote(client_id)
-
+            print(role)
             if(role == "receiver"):
                 self.pairings[client_id] = websocket 
 
-        
             async for message in websocket:
-                if role == "sender" and client_id in self.pairings:
-                
-                    content = json.loads(message)
+                print(message)
+                content = json.loads(message)
 
-                    msg = content["message"]
-                    
+                msg = content["message"]
+
+                if(msg==MACRO_EXECUTED or msg==MACRO_ERROR):
+                    print(self.windows)
+                    self.__update_windows_dict(client_id, will_use=False)
+                    print(self.windows)
+                    await self.__delete_processes_with_lock(client_id)
+
+                    if self.are_there_macros_in_queue():
+                        self.run_next_macro_queue()
+
+                    if(msg==MACRO_EXECUTED):
+                        try:
+                            data = content.get("data")
+
+                            if(data):
+                                data = json.dumps(data)
+
+                            self.database.add_macro_to_history(urllib.parse.unquote(file), data)
+                        except:
+                            pass  
+                
+                
+                if role == "sender" and client_id in self.pairings:
+                    print(message)
+
+
                     self.processes_last_message[client_id] = msg
 
-                    if(msg==MACRO_EXECUTED or msg==MACRO_ERROR):
-                        self.__update_windows_dict(client_id, will_use=False)
-
-                        await self.__delete_processes_with_lock(client_id)
-                        
-
-                        if self.are_there_macros_in_queue():
-                            self.run_next_macro_queue()
-
-                        if(msg==MACRO_EXECUTED):
-                            try:
-                                data = content.get("data")
-
-                                if(data):
-                                    data = json.dumps(data)
-                            
-                                self.database.add_macro_to_history(urllib.parse.unquote(file), data)
-                            except:
-                                pass  
+                    
                     await self.pairings[client_id].send(str(msg))
                 else:
                     await websocket.send("Receiver not connected")
         except:
             pass
+
+    
 
     async def __ws_server(self):
         
