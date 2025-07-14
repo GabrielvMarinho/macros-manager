@@ -11,6 +11,10 @@ class Database:
     def __init__(self):
         
         self.cur.executescript("""
+            CREATE TABLE IF NOT EXISTS sap_login(
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                login TEXT
+            );
             CREATE TABLE IF NOT EXISTS macros_history (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT,
@@ -37,6 +41,28 @@ class Database:
                 FOREIGN KEY (list_id) references lists(id)
             );
         """)
+    def set_user_sap_login(self, login):
+        self.cur.execute("SELECT login FROM sap_login LIMIT 1")
+        existing = self.cur.fetchone()
+        if existing:
+            self.cur.execute("UPDATE sap_login SET login = ?", (login,))
+        else:
+            self.cur.execute("INSERT INTO sap_login (login) VALUES (?)", (login,))
+        
+        self.con.commit()
+        return 
+    def get_user_sap_login(self):
+        self.cur.execute("""
+                    SELECT 
+                        login
+                    FROM sap_login 
+                    LIMIT 1; 
+                    """)
+        try:
+            return self.cur.fetchone()[0] 
+        except:
+            return None
+        
     def get_lists_macro(self, path):
         self.cur.execute("""
                     SELECT 

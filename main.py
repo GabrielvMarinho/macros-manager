@@ -20,6 +20,7 @@ import sys
 import time
 import subprocess
 import pyautogui
+import keyring
 from cachetools import cached, TTLCache
 MACRO_EXECUTED = "macro_executed"
 MACRO_ERROR = "macro_error"
@@ -282,7 +283,7 @@ class Api:
             pass
 
     
-
+    
     async def __ws_server(self):
         
         await websockets.serve(self.__handle_connection, "localhost", 8765)
@@ -327,20 +328,27 @@ class Api:
 
     def get_credentials(self):
         try:
-            path = os.path.join(os.getcwd(), "modelo_default", "sap_login.txt")
-
-            [login, password] = open(path).read().strip().split(",")
+            login = self.database.get_user_sap_login()
+            password = keyring.get_password("macros-manager", login)
             return json.dumps({"login":login,"password":password})
-        except:
+        except Exception as e:
+            print(e)
             return json.dumps({"login":"","password":""})
+        
     def update_credentials(self, login, password):
         try:
-            path = os.path.join(os.getcwd(), "modelo_default", "sap_login.txt")
+            existing_login = self.database.get_user_sap_login()
+            if existing_login:
+                keyring.delete_password("macros-manager", existing_login)
 
-            f = open(path, "w")
-            f.write(f"{login},{password}")
-            f.close()
-        except:
+
+            keyring.set_password("macros-manager", login, password)
+            
+
+            self.database.set_user_sap_login(login)
+            
+        except Exception as e:
+            print("err", e)
             pass
 
     def open_sap_web(self, download_dir=None, timeout=100):
@@ -388,10 +396,9 @@ class Api:
 
     def open_sap(self):
         try:
-            path = os.path.join(os.getcwd(), "modelo_default", "sap_login.txt")
-
-            [login, password] = open(path).read().strip().split(",")
-
+            credentials = json.loads(self.get_credentials())
+            login = credentials["login"]
+            password = credentials["password"]
             if(not login or not password):
                 self.open_sap_web()
                 return

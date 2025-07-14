@@ -5,9 +5,9 @@ import os
 import time
 import subprocess
 import pyautogui
-from language_dict import Language
+from modelo_default.language_dict import Language
 import asyncio
-from functions import send_update
+from modelo_default.functions import send_update
 import json
 # SAP Scripting Documentation:
 # https://help.sap.com/docs/sap_gui_for_windows/b47d018c3b9b45e897faf66a6c0885a8/a2e9357389334dc89eecc1fb13999ee3.html
