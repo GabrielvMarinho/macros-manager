@@ -3,10 +3,8 @@
 
 dist
 build
-main.spec
 database.db
 windows.json
-main.spec
 tasks.md
 .env
 *.swp
