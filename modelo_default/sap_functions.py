@@ -31,7 +31,7 @@ class SAP:
         
 
         if self.connection.Children(0).info.user == '':
-            #asyncio.run(send_update(self.section_parent_folder, self.parent_folder, json.dumps({"message":"macro_error"})))
+            asyncio.run(send_update(self.section_parent_folder, self.parent_folder, json.dumps({"message":"macro_error"})))
             messagebox.showerror(title=self.language.search('sap_logon_err_title'),
                                  message=self.language.search('sap_logon_err_body'))
 

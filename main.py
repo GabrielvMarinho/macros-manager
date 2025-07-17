@@ -22,26 +22,27 @@ import subprocess
 import pyautogui
 import keyring
 from cachetools import cached, TTLCache
+import io
 MACRO_EXECUTED = "macro_executed"
 MACRO_ERROR = "macro_error"
 
-def run_macro_module(sap_window, fileContent, section, file, params=None):
-        obj = {"section_parent_folder": section, "parent_folder": file, "sap_window":sap_window}
+def run_macro_module(sap_window, fileContent, section, file, login, password, params=None):
+        obj = {"section_parent_folder": section, "parent_folder": file, "login": login, "password":password, "sap_window":sap_window}
         if params:
             obj["params"] = params
         
         sys.argv.append(json.dumps(obj))
 
 
-        # data = io.StringIO()
-        # sys.stdout = data
+        data = io.StringIO()
+        sys.stdout = data
 
         exec(fileContent)
         
-        # sys.stdout = sys.__stdout__
+        sys.stdout = sys.__stdout__
 
-        # logs = data.getvalue()
-
+        logs = data.getvalue()
+        print(logs)
         
 
 
@@ -123,7 +124,10 @@ class Api:
     
     def _start_transaction(self, section, file, fileContent, params=None):
         window = self.__update_windows_dict(section+file, will_use=True)
-        p = multiprocessing.Process(target=run_macro_module, args=(window, fileContent, section, file, params,))
+        credentials = json.loads(self.get_credentials())
+        login = credentials["login"]
+        password = credentials["password"]
+        p = multiprocessing.Process(target=run_macro_module, args=(window, fileContent, section, file, login, password, params,))
         p.start()
         return p
     
@@ -133,6 +137,7 @@ class Api:
         data = self.database.get_macro_output(id)
         data = json.loads(data)
         data = pd.DataFrame(data)
+        
         with tempfile.TemporaryFile(delete=False, suffix=".xlsx") as f:
             data.to_excel(f.name)
             os.startfile(f.name)
@@ -195,7 +200,8 @@ class Api:
 
 
             return json.dumps({"status":"success"})
-        except:
+        except Exception as e:
+            print(e)
             return json.dumps({"status":"error"})
     
       
@@ -575,8 +581,8 @@ if __name__ == "__main__":
     ws_thread = threading.Thread(target=api.run_ws_server, daemon=True)
     ws_thread.start()
 
-    # webview.create_window("Gerenciador De Scripts", "frontend-2/build/index.html", js_api=api, confirm_close=True)
-    webview.create_window("Gerenciador De Scripts", "localhost:3000", js_api=api, confirm_close=True, maximized=True, min_size=(1450, 850))
+    webview.create_window("Gerenciador De Scripts", "frontend/build/index.html", js_api=api, confirm_close=True)
+    # webview.create_window("Gerenciador De Scripts", "localhost:3000", js_api=api, confirm_close=True, maximized=True, min_size=(1450, 850))
 
     asyncio.run(webview.start(debug=True))
     

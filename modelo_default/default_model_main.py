@@ -4,11 +4,12 @@ def main():
     import json
     from modelo_default.sap_functions import SAP
     from modelo_default.functions import send_update
-
     import asyncio
     params = None
     parent_folder = None
     section_parent_folder = None
+    login = None
+    password = None
 
 
     json_param = json.loads(sys.argv[1])
@@ -16,8 +17,11 @@ def main():
     parent_folder = json_param["parent_folder"]
     sap_window_number = json_param["sap_window"]
 
+
     try:
         params = json_param["params"]
+        login = json_param["login"]
+        password = json_param["password"]
     except:
         pass
 
@@ -28,7 +32,7 @@ def main():
 
 
     default_language = 'PT'
-    scheduled_execution = {'scheduled?': False, 'username': "", 'password': "", 'principal': '100'}
+    scheduled_execution = {'scheduled?': False, 'username': login, 'password': password, 'principal': '100'}
     sap_window = sap_window_number
 
 
