@@ -57,7 +57,10 @@ def main():
         # message to show that its was finished
         asyncio.run(send_update(section_parent_folder, parent_folder, json.dumps({"message":"macro_executed", "data":[{"dado":1, "teste":123}]})))
     except Exception as e:
+        print(e)
         asyncio.run(send_update(section_parent_folder, parent_folder, json.dumps({"message":"macro_error"})))
 
-
-main()
+try:
+    main()
+except Exception as e:
+    print(e)

@@ -1,4 +1,5 @@
-{
+import json
+content = json.dumps({
     "not_found": "¡Traducción no encontrada!",
     "greeting": "Bienvenido a $automation_name, $username",
 
@@ -38,4 +39,4 @@
     "sap_system_err_body": "Tienes abierto SAP Quality Assurance, (SAP QA)\n¡Muchas cosas pueden no funcionar como se desea!",
 
     "sap_language_err_body": "Tu sistema SAP actualmente no tiene seleccionado el idioma $language, ¡pueden ocurrir muchos errores!"
-}
+})
