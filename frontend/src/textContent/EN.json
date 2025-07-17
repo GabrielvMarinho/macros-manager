@@ -17,7 +17,7 @@
     "settings":"Settings",
     "configuration_saved":"Settings saved!",
     "save_changes":"Save changes",
-    "actions":"Ações",
+    "actions":"Actions",
     "languages":"Languages",
     "dashboard":"Dashboard",
     "theme":"Theme",
@@ -38,5 +38,6 @@
     "id":"Id",
     "name":"Name",
     "conclusion":"Conclusion",
-    "load":"Load"
+    "load":"Load",
+    "type_list_name":"Type the new List's name"
 }

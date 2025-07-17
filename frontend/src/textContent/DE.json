@@ -40,6 +40,7 @@
     "id": "Id",
     "name": "Name",
     "conclusion": "Fazit",
-    "load": "Laden"
+    "load": "Laden",
+    "type_list_name": "Gib den Namen der neuen Liste ein"
 
 }

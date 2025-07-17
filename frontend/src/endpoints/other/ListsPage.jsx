@@ -115,16 +115,16 @@ export default function({api, json}){
 
 
 
-            <Modal footer={null} width="400px" title={"Type the new List's name"} open={modalAddList} onCancel={() =>setModalAddList(false)}>
+            <Modal footer={null} width="400px" title={json.type_list_name} open={modalAddList} onCancel={() =>setModalAddList(false)}>
                 <Form style={{marginTop:"25px"}}>
-                    <Form.Item help={nameError?nameError:""} validateStatus={nameError?"error":""} label="name">
+                    <Form.Item help={nameError?nameError:""} validateStatus={nameError?"error":""} label={json.name}>
                         <Input type="name" onChange={(e) =>_setName(e.target.value)} value={name}></Input>
                     </Form.Item>
                     <Form.Item>
                         {nameError || !name?
                         <Button style={{pointerEvents:"none", opacity:"0.3"}} htmlType="submit">Create</Button>
                             :
-                        <Button htmlType="submit" onClick={createList}>Create</Button>
+                        <Button htmlType="submit" onClick={createList}>{json.new_list}</Button>
                             }
 
                     </Form.Item>

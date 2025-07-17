@@ -36,8 +36,7 @@ export function MacroBoxDashboard({ api, json, section, file, stopMacro, executa
                 <div
                     className="loading-bar"
                     style={{
-                      width: `${progresso || 0}%`,
-                      backgroundColor: "black",
+                      width: `${progresso || 0}%`
                     }}
                   ></div>
               </div>

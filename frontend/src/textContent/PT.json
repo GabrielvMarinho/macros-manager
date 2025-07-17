@@ -41,6 +41,8 @@
     "id": "Id",
     "name": "Nome",
     "conclusion": "Conclusão",
-    "load": "Carregar"
+    "load": "Carregar",
+    "type_list_name": "Digite o nome da nova lista"
+
 
 }

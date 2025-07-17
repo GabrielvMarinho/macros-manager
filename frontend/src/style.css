@@ -88,6 +88,7 @@ body{
 
 .loading-bar {
     transition: 0.4s;
+    background-color: var(--text-dark);
 
     height: 100%;
     width: 0%;

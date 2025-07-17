@@ -39,7 +39,9 @@
     "id": "Id",
     "name": "Nom",
     "conclusion": "Conclusion",
-    "load": "Charger"
+    "load": "Charger",
+    "type_list_name": "Tapez le nom de la nouvelle liste"
+
 
 
 }

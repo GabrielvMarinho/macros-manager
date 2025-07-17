@@ -1,11 +1,22 @@
 import sqlite3
 from datetime import datetime
 import json
-        
-
+import os
+import sys
+                
+    
 class Database:
-    con = sqlite3.connect("database/database.db", check_same_thread=False)
+    
 
+    def resource_path(relative_path):
+        base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
+        return os.path.join(base_path, relative_path)
+
+    db_path = resource_path("database/database.db")
+    print(db_path)
+
+    con = sqlite3.connect(db_path, check_same_thread=False)
+    
     cur = con.cursor()
 
     def __init__(self):

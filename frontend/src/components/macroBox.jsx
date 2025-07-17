@@ -172,7 +172,6 @@ export function MacroBox({ json, run, showSection=false, section, queued, execut
                       className="loading-bar"
                       style={{
                         width: `${progresso || 0}%`,
-                        backgroundColor: "black",
                       }}
                     ></div>
                 </div>

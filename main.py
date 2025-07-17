@@ -567,17 +567,19 @@ if __name__ == "__main__":
 
     api = Api()
     
-    ipc_thread = threading.Thread(target=api.ipc_listener, daemon=True)
-    ipc_thread.start()
+    try:
+        ipc_thread = threading.Thread(target=api.ipc_listener, daemon=True)
+        ipc_thread.start()
 
-    ws_thread = threading.Thread(target=api.run_ws_server, daemon=True)
-    ws_thread.start()
+        ws_thread = threading.Thread(target=api.run_ws_server, daemon=True)
+        ws_thread.start()
 
-    webview.create_window("Gerenciador De Scripts", "frontend/build/index.html", js_api=api, confirm_close=True)
-    # webview.create_window("Gerenciador De Scripts", "localhost:3000", js_api=api, confirm_close=True, maximized=True, min_size=(1450, 850))
-
-    asyncio.run(webview.start(debug=True))
-    
+        webview.create_window("Gerenciador De Scripts", "frontend/build/index.html", js_api=api, confirm_close=True)
+        # webview.create_window("Gerenciador De Scripts", "localhost:3000", js_api=api, confirm_close=True, maximized=True, min_size=(1450, 850))
+        
+        asyncio.run(webview.start())
+    except Exception as e:
+        print(e)
     
 
 
