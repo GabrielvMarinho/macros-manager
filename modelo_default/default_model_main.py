@@ -10,15 +10,14 @@ def main():
     section_parent_folder = None
     login = None
     password = None
-
-
-    json_param = json.loads(sys.argv[1])
-    section_parent_folder = json_param["section_parent_folder"]
-    parent_folder = json_param["parent_folder"]
-    sap_window_number = json_param["sap_window"]
+    sap_window_number = None
 
 
     try:
+        json_param = json.loads(sys.argv[1])
+        section_parent_folder = json_param["section_parent_folder"]
+        parent_folder = json_param["parent_folder"]
+        sap_window_number = json_param["sap_window"]
         params = json_param["params"]
         login = json_param["login"]
         password = json_param["password"]
