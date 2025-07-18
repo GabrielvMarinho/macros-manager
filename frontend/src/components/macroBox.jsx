@@ -33,8 +33,6 @@ export function MacroBox({ json, run, showSection=false, section, queued, execut
   
   const tryStartMacro = () =>{
     setLoading(true)
-
-
     let resolvePromise 
     const promise = new Promise((resolve, ) =>{
       resolvePromise = resolve;
@@ -55,11 +53,10 @@ export function MacroBox({ json, run, showSection=false, section, queued, execut
         setColumnsObj(columns);
         setFileContent(fileContent)
         setDesc(desc);
-        if(columns){
-          if(Object.entries(columns).length ==0){
-            
-            __startMacro(fileContent, resolvePromise)
-          }
+        if(columns && Object.entries(columns).length ==0){
+          
+          __startMacro(fileContent, resolvePromise)
+          
         }
         
         else{
