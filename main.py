@@ -238,20 +238,16 @@ class Api:
             role, section, file = params  
             client_id = section+file
             client_id = urllib.parse.unquote(client_id)
-            print(role)
             if(role == "receiver"):
                 self.pairings[client_id] = websocket 
 
             async for message in websocket:
-                print(message)
                 content = json.loads(message)
 
                 msg = content["message"]
 
                 if(msg==MACRO_EXECUTED or msg==MACRO_ERROR):
-                    print(self.windows)
                     self.__update_windows_dict(client_id, will_use=False)
-                    print(self.windows)
                     await self.__delete_processes_with_lock(client_id)
 
                     if self.are_there_macros_in_queue():
@@ -270,7 +266,6 @@ class Api:
                 
                 
                 if role == "sender" and client_id in self.pairings:
-                    print(message)
 
 
                     self.processes_last_message[client_id] = msg
@@ -431,7 +426,8 @@ class Api:
     def get_files(self, section, file):
         try:
             return json.dumps(self.office365.get_files(section, file))
-        except:
+        except Exception as e:
+            print(e)
             return json.dumps({})
 
     def get_folders_in_list(self, list_id):
@@ -536,14 +532,12 @@ class Api:
             all_lists = json.loads(self.get_lists())
 
             for list_ in all_lists:
-                print(list_)
                 list_["has_this_macro"] = False
 
             for register in macro_list_relation:
                 result = next(obj for obj in all_lists if obj["id"] == register[0])
                 if(result):
                     result["has_this_macro"] = True
-            print(all_lists)
             return json.dumps(all_lists)
         except Exception as e:
             print(e)

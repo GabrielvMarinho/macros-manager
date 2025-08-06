@@ -50,17 +50,17 @@ export function MacroBox({ json, run, showSection=false, section, queued, execut
 
     fetchWrapper(api.get_files(section, file)).then( data =>{
         const columns = data["inputs.json"];
+        console.log(columns)
         const desc = data["data.json"];
         const fileContent = data["main.py"];
         setColumnsObj(columns);
         setFileContent(fileContent)
         setDesc(desc);
-        if(columns){
-          if(Object.entries(columns).length ==0){
+        if(columns && Object.entries(columns).length ==0){
             
-            __startMacro(fileContent, resolvePromise)
-          }
+          __startMacro(fileContent, resolvePromise)
         }
+        
         
         else{
           const initialForm = Object.entries(columns).reduce((acc, [, value]) => {
@@ -75,7 +75,7 @@ export function MacroBox({ json, run, showSection=false, section, queued, execut
     
   }
    
-  const startMacroWithInput = () => {
+  const startMacroWithInput = async () => {
     
     setModal(false)
 
@@ -90,7 +90,7 @@ export function MacroBox({ json, run, showSection=false, section, queued, execut
             : value
         ])
       );
-    startMacro(section, file, fileContent, lista); 
+    await startMacro(section, file, fileContent, lista); 
     resolvePromise(section, file)
 
     queryValueAgain()
